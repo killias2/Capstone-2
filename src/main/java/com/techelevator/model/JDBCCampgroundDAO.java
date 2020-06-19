@@ -1,5 +1,6 @@
 package com.techelevator.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -15,16 +16,28 @@ public class JDBCCampgroundDAO implements CampgroundDAO {
 		this.jdbcTemplate = new JdbcTemplate(datasource);
 	}
 	
-	@Override
+	@Override //TODO finish this method
 	public List<Site> returnTopAvailableSites(CampgroundSearch search) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Site> topAvailableSites = new ArrayList<>();
+		String sqlReturnTopAvailableSites = "";  //TODO write SQL query
+		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlReturnTopAvailableSites); //fill out in order ? appear
+		
+		while(results.next()) {
+			topAvailableSites.add(mapRowToSite(results));  //add each row as a new entry on the list
+		}
+		return topAvailableSites;
 	}
 
-	@Override
+	@Override //TODO finish this method
 	public List<Site> returnTopSitesRequirements(AdvancedSearch search) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Site> topSitesRequirements = new ArrayList<>();
+		String sqlReturnTopSitesRequirements = ""; //TODO write SQL query
+		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlReturnTopSitesRequirements);
+		
+		while(results.next()) {
+			topSitesRequirements.add(mapRowToSite(results));
+		}
+		return topSitesRequirements;
 	}
 	
 	public Campground addCampground(Campground newCampground) {
@@ -48,5 +61,15 @@ public class JDBCCampgroundDAO implements CampgroundDAO {
 		}
 	}
 	
-
+	private Site mapRowToSite(SqlRowSet results) {
+		Site thisSite = new Site();
+		thisSite.setSiteId(results.getLong("site_id"));
+		thisSite.setCampgroundId(results.getInt("campground_id"));
+		thisSite.setSiteNumber(results.getInt("site_number"));
+		thisSite.setMaxOccupancy(results.getInt("max_occupancy"));
+		thisSite.setAccessible(results.getBoolean("accessible"));
+		thisSite.setMaxRVlength(results.getInt("max_rv_length"));
+		thisSite.setUtilities(results.getBoolean("utilities"));
+		return thisSite;
+	}
 }
