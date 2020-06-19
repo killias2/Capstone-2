@@ -11,4 +11,9 @@ public class Menu {
 	private PrintWriter out;
 	private Scanner in;
 	
+	
+	
+	public getUserInput() {
+		
+	}
 }
