@@ -5,7 +5,7 @@ import java.time.LocalDate;
 public class Park {
 	
 	private int parkId;
-	private String name;
+	private String parkName;
 	private String location;
 	private LocalDate establishDate;
 	private long area;
@@ -15,14 +15,14 @@ public class Park {
 	public int getParkId() {
 		return parkId;
 	}
-	public void setPark_id(int parkId) {
+	public void setParkId(int parkId) {
 		this.parkId = parkId;
 	}
-	public String getName() {
-		return name;
+	public String getParkName() {
+		return parkName;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setParkName(String name) {
+		this.parkName = name;
 	}
 	public String getLocation() {
 		return location;

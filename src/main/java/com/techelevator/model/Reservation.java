@@ -2,11 +2,10 @@ package com.techelevator.model;
 
 import java.time.LocalDate;
 
-public class Reservation {
+public class Reservation extends Site{
 	
 	private long reservationId;
-	private long siteId;
-	private String name;
+	private String reservationName;
 	private LocalDate fromDate;
 	private LocalDate toDate;
 	private LocalDate createDate;
@@ -17,17 +16,11 @@ public class Reservation {
 	public void setReservationId(long reservationId) {
 		this.reservationId = reservationId;
 	}
-	public long getSiteId() {
-		return siteId;
+	public String getReservationName() {
+		return reservationName;
 	}
-	public void setSiteId(long siteId) {
-		this.siteId = siteId;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
+	public void setReservationName(String name) {
+		this.reservationName = name;
 	}
 	public LocalDate getFromDate() {
 		return fromDate;

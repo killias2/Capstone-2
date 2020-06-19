@@ -20,7 +20,7 @@ public class JDBCReservationDAO implements ReservationDAO {
 		newReservation.setReservationId(getNextReservationId());
 		
 		jdbcTemplate.update(sqlInsertReservation, newReservation.getReservationId(), newReservation.getSiteId(), 
-				newReservation.getName(), newReservation.getFromDate(), newReservation.getToDate(), newReservation.getCreateDate());
+				newReservation.getReservationName(), newReservation.getFromDate(), newReservation.getToDate(), newReservation.getCreateDate());
 		
 		return newReservation;
 	}
@@ -51,7 +51,7 @@ public class JDBCReservationDAO implements ReservationDAO {
 		Reservation someReservation = new Reservation();
 		someReservation.setReservationId(results.getLong("reservation_id"));
 		someReservation.setSiteId(results.getLong("site_id"));
-		someReservation.setName(results.getString("name"));
+		someReservation.setReservationName(results.getString("name"));
 		someReservation.setFromDate(results.getDate("from_date").toLocalDate());
 		someReservation.setToDate(results.getDate("to_date").toLocalDate());
 		someReservation.setCreateDate(results.getDate("create_date").toLocalDate());

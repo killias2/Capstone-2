@@ -1,12 +1,11 @@
 package com.techelevator.model;
 
-public class Campground {
+public class Campground extends Park{
 	
 	private int campgroundId;
-	private int park_Id;
-	private String name;
-	private int openFromMonth;
-	private int openToMonth;
+	private String campName;
+	private String openFromMonth;
+	private String openToMonth;
 	private int dailyFee;
 	
 	public int getCampgroundId() {
@@ -15,28 +14,22 @@ public class Campground {
 	public void setCampgroundId(int campgroundId) {
 		this.campgroundId = campgroundId;
 	}
-	public int getPark_Id() {
-		return park_Id;
+	public String getCampName() {
+		return campName;
 	}
-	public void setPark_Id(int park_Id) {
-		this.park_Id = park_Id;
+	public void setCampName(String name) {
+		this.campName = name;
 	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public int getOpenFromMonth() {
+	public String getOpenFromMonth() {
 		return openFromMonth;
 	}
-	public void setOpenFromMonth(int openFromMonth) {
+	public void setOpenFromMonth(String openFromMonth) {
 		this.openFromMonth = openFromMonth;
 	}
-	public int getOpenToMonth() {
+	public String getOpenToMonth() {
 		return openToMonth;
 	}
-	public void setOpenToMonth(int openToMonth) {
+	public void setOpenToMonth(String openToMonth) {
 		this.openToMonth = openToMonth;
 	}
 	public int getDailyFee() {

@@ -1,9 +1,8 @@
 package com.techelevator.model;
 
-public class Site {
+public class Site extends Campground{
 	
 	private long siteId;
-	private int campgroundId;
 	private int siteNumber;
 	private int maxOccupancy;
 	private boolean accessible;
@@ -15,12 +14,6 @@ public class Site {
 	}
 	public void setSiteId(long siteId) {
 		this.siteId = siteId;
-	}
-	public int getCampgroundId() {
-		return campgroundId;
-	}
-	public void setCampgroundId(int campgroundId) {
-		this.campgroundId = campgroundId;
 	}
 	public int getSiteNumber() {
 		return siteNumber;
