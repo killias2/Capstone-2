@@ -1,6 +1,5 @@
 package com.techelevator.model;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +21,7 @@ public class JDBCParkDAO implements ParkDAO {
 		
 		List<Park> parkList = new ArrayList<Park>();
 		String sqlReturnAllParks = "SELECT park_id, name, location, establish_date, area, visitors, " +
-				"description FROM park ORDER BY name";
+				"description, ROW_NUMBER() OVER() FROM park ORDER BY name";
 		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlReturnAllParks);
 		while (results.next()) {
 			Park thisPark = new Park();
@@ -33,6 +32,7 @@ public class JDBCParkDAO implements ParkDAO {
 			thisPark.setArea(results.getLong("area"));
 			thisPark.setVisitors(results.getLong("visitors"));
 			thisPark.setDescription(results.getString("description"));
+			thisPark.setParkRow(results.getInt("row_number"));
 			parkList.add(thisPark);
 		}
 		
@@ -43,7 +43,7 @@ public class JDBCParkDAO implements ParkDAO {
 	public List<Campground> returnAllCampgrounds(int parkId) {
 		
 		List<Campground> campList = new ArrayList<Campground>();
-		String sqlReturnAllParks = "SELECT campground_id, name, open_from_mm, open_to_mm, daily_fee::numeric) " +
+		String sqlReturnAllParks = "SELECT campground_id, name, open_from_mm, open_to_mm, daily_fee::numeric::integer " +
 				"FROM campground WHERE park_id = ?";
 		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlReturnAllParks, parkId);
 		while (results.next()) {
@@ -174,9 +174,31 @@ public class JDBCParkDAO implements ParkDAO {
 	}
 
 	@Override
-	public List<Reservation> returnAllReservationsNext30Days(LocalDate currentDate, int parkId) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Reservation> returnAllReservationsNext30Days(int parkId) {
+		List<Reservation> resList = new ArrayList<>();
+		String sqlReturn30DaysReservations = "SELECT reservation_id, r.site_id, r.name, from_date, " +
+				"to_date, create_date\n" + 
+				"FROM reservation r\n" + 
+				"JOIN site s ON r.site_id = s.site_id\n" + 
+				"JOIN campground c ON s.campground_id = c.campground_id\n" + 
+				"WHERE\n" + 
+				"c.campground_id = ?\n" + 
+				"AND\n" + 
+				"(\n" + 
+				"from_date BETWEEN (CURRENT_DATE) AND (CURRENT_DATE + INTERVAL '30 day')\n" + 
+				"OR\n" + 
+				"to_date BETWEEN (CURRENT_DATE) AND (CURRENT_DATE + INTERVAL '30 day')\n" + 
+				"OR\n" + 
+				"CURRENT_DATE BETWEEN from_date AND to_date)";
+		
+				SqlRowSet results = jdbcTemplate.queryForRowSet(sqlReturn30DaysReservations, parkId);
+				
+		while (results.next()) {
+			Reservation newRes = new Reservation();
+			newRes = mapRowToReservation(results);
+			resList.add(newRes);
+		}
+		return resList;
 	}
 	
 	
@@ -210,6 +232,17 @@ public class JDBCParkDAO implements ParkDAO {
 		newSite.setMaxRVlength(results.getInt("max_rv_length"));
 		newSite.setUtilities(results.getBoolean("utilities"));
 		return newSite;
+	}
+	
+	private Reservation mapRowToReservation(SqlRowSet results) {
+		Reservation someReservation = new Reservation();
+		someReservation.setReservationId(results.getLong("reservation_id"));
+		someReservation.setSiteId(results.getLong("site_id"));
+		someReservation.setReservationName(results.getString("name"));
+		someReservation.setFromDate(results.getDate("from_date").toLocalDate());
+		someReservation.setToDate(results.getDate("to_date").toLocalDate());
+		someReservation.setCreateDate(results.getDate("create_date").toLocalDate());
+		return someReservation;
 	}
 
 }
