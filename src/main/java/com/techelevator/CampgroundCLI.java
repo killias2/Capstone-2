@@ -11,12 +11,15 @@ import org.apache.commons.dbcp2.BasicDataSource;
 
 import com.techelevator.model.Campground;
 import com.techelevator.model.CampgroundDAO;
+import com.techelevator.model.CampgroundSearch;
 import com.techelevator.model.JDBCCampgroundDAO;
 import com.techelevator.model.JDBCParkDAO;
 import com.techelevator.model.JDBCReservationDAO;
 import com.techelevator.model.Park;
 import com.techelevator.model.ParkDAO;
+import com.techelevator.model.Reservation;
 import com.techelevator.model.ReservationDAO;
+import com.techelevator.model.Site;
 import com.techelevator.projects.view.Menu;
 
 public class CampgroundCLI {
@@ -41,7 +44,7 @@ public class CampgroundCLI {
 
 	public CampgroundCLI(DataSource datasource) {
 		// create your DAOs here
-		this.menu = new Menu();
+		//his.menu = new Menu();
 		parkDAO = new JDBCParkDAO(datasource);
 		campgroundDAO = new JDBCCampgroundDAO(datasource);
 //		siteDAO = new JDBCSiteDAO(datasource);
@@ -53,11 +56,22 @@ public class CampgroundCLI {
 	public void run() {
 		//call method to display application banner
 		while (true) {
-			runAllParksPage();
-			if (userInput.contains(s)) {
-				
-			} else if (userInput.equalsIgnoreCase("q")) {
-				//stop application from running
+//			runAllParksPage();
+			System.out.println("Select a Park for details");
+			System.out.println();
+			Map<String, Park> parkmap = makeParkNamesOptionsList(); //helper method prints all other options
+			System.out.println("Q) quit");
+			System.out.println();
+			String userInput = getUserInput();
+			if (parkmap.containsKey(userInput) ) {  //&& userInputIsValid(userInput)
+				Park specificPark = parkmap.get(userInput);
+				runSpecificParkPage(specificPark);
+			}
+//			if (userInput.contains(s)) {
+//				
+//			} 
+			else if (userInput.equalsIgnoreCase("q")) {
+				System.exit(0);
 			}
 		}
 		
@@ -69,28 +83,28 @@ public class CampgroundCLI {
 		return new Scanner(System.in).nextLine();
 	}
 	
-	public boolean userInputIsValid(String userInput) { //checks for all the weird things
-		if() {
-			return true;
-		} 
-		System.out.println("Invalid selection");
-		return false;
-	}
+//	public boolean userInputIsValid(String userInput) { //checks for all the weird things
+//		if() {
+//			return true;
+//		} 
+//		System.out.println("Invalid selection");
+//		return false;
+//	}
 	
 	
 	//subpage methods
-	public void runAllParksPage() {
-		System.out.println("Select a Park for details");
-		System.out.println();
-		Map<String, Park> parkmap = makeParkNamesOptionsList(); //helper method prints all other options
-		System.out.println("Q) quit");
-		System.out.println();
-		String userInput = getUserInput();
-		if (parkmap.containsKey(userInput) && userInputIsValid(userInput)) {
-			Park specificPark = parkmap.get(userInput);
-			runSpecificParkPage(specificPark);
-		}
-	}
+//	public void runAllParksPage() {
+//		System.out.println("Select a Park for details");
+//		System.out.println();
+//		Map<String, Park> parkmap = makeParkNamesOptionsList(); //helper method prints all other options
+//		System.out.println("Q) quit");
+//		System.out.println();
+//		String userInput = getUserInput();
+//		if (parkmap.containsKey(userInput) && userInputIsValid(userInput)) {
+//			Park specificPark = parkmap.get(userInput);
+//			runSpecificParkPage(specificPark);
+//		}
+//	}
 	
 	public void runSpecificParkPage(Park thisPark) {
 		System.out.println(thisPark.getParkName());
@@ -135,7 +149,7 @@ public class CampgroundCLI {
 		System.out.println("2) Return to " + thisPark.getParkName() + " National Park page"); //TODO test all these going back things
 		String userInput = getUserInput();
 		if(userInput.equals("1")) {
-			runSearchCampsitesFromCamp(); //TODO write method
+//			runSearchCampsitesFromCamp(campMap);
 		} //selecting 2 returns user to last layer
 		
 	}
@@ -149,12 +163,34 @@ public class CampgroundCLI {
 		System.out.println("3) Return to Park page");
 		String userInput = getUserInput();
 		if(userInput.equals("1")) {
-			runSearchCampsitesFromPark(); //TODO write method
+//			runParkwideSearchCampsiteAvailability(thisPark); //TODO write method
 		}
 		else if(userInput.equals("2")) {
-			runListAllUpcomingReservations();  //TODO write method >>LEFT OFF HERE
+//			runListAllUpcomingReservations();  //TODO write method 
 		} //selecting "3" should return user to last layer
 	}
+	
+//	public List<Site> runSearchCampsitesFromCamp(Map<String, Campground> campMap) {
+//		System.out.println("Which campground? (Enter * to cancel search ___");
+//		String userInput = getUserInput();
+//		if (campMap.containsKey(userInput)) {
+//			Campground specificCamp = campMap.get(userInput);
+//		}
+//		//TODO FINISH THIS; think will need to pass campgroundID into campgroundsearch constructor
+//		CampgroundSearch campgroundSearch = new CampgroundSearch();
+//		List<Site> resultsList = campgroundDAO.returnTopAvailableSites(search);
+//		return  resultsList;
+//	}
+	
+//	public List<Site> runParkwideSearchCampsiteAvailability(Park thisPark){
+//		
+//		
+//		return resultsList;
+//	}
+//	
+//	public List<Reservation> runListAllUpcomingReservations(){
+//		
+//	}
 	
 	//helper methods
 	public Map<String, Park> makeParkNamesOptionsList() {		//may need to add (List<Park> parkList)

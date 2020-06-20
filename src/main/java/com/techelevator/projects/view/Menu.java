@@ -19,7 +19,7 @@ public class Menu {
 		this.in = new Scanner(input);
 	}
 	
-	public getUserInput() {
-		
-	}
+//	public getUserInput() {
+//		
+//	}
 }
