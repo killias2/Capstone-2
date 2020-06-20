@@ -6,6 +6,7 @@ public class ReservationSearch {
 	
 	private LocalDate fromDate;
 	private LocalDate toDate;
+	private int parkId;
 	
 	public LocalDate getFromDate() {
 		return fromDate;
@@ -24,6 +25,15 @@ public class ReservationSearch {
 		fromDate = searchFromDate;
 		toDate = searchToDate;
 	}
+	public int getParkId() {
+		return parkId;
+	}
+	public void setParkId(int parkId) {
+		this.parkId = parkId;
+	}
+	
+
+	
 	
 	
 

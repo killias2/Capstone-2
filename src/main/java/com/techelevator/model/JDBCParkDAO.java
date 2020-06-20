@@ -62,11 +62,52 @@ public class JDBCParkDAO implements ParkDAO {
 
 	@Override
 	public List<Site> returnAllAvailableSites(ReservationSearch search) {
+		List<Site> siteList = new ArrayList<Site>();
+		String sqlReturnAllAvailableSites = "SELECT row_filter.* FROM (SELECT campground.campground_id, "
+				+ "site.site_id, site_number, max_occupancy, accessible, max_rv_length, utilities, "
+				+ "count(r.reservation_id) pop, ROW_NUMBER() OVER (PARTITION BY campground.campground_id "
+				+ "ORDER BY count(r.reservation_id) DESC, site.site_id) FROM site " 
+				+ "LEFT JOIN reservation r ON site.site_id = r.site_id " 
+				+ "LEFT JOIN campground ON site.campground_id = campground.campground_id WHERE "
+				+ "campground.park_id = ? AND site.site_id NOT IN ( "
+				+ "      SELECT r.site_id "
+				+ "      FROM reservation r "
+				+ "      WHERE \n"
+				+ "      (? BETWEEN r.from_date AND r.to_date) "
+				+ "      OR (? BETWEEN r.from_date AND r.to_date) " 
+				+ "      OR (? < r.from_date AND ? > r.from_date) " 
+				+ "        ) " 
+				+ "AND        " 
+				+ "site.site_id IN ( " 
+				+ "      SELECT site.site_id " 
+				+ "      FROM site " 
+				+ "      WHERE " 
+				+ "      (DATE_PART ('month', ?) "
+				+ "      >= (campground.open_from_mm::double precision) " 
+				+ "      AND "
+				+ "      DATE_PART ('month', ?) <= "
+				+ "      (campground.open_to_mm::double precision)) " 
+				+ "      AND " 
+				+ "      (DATE_PART ('month', ?) >= "
+				+ "      (campground.open_from_mm::double precision) " 
+				+ "      AND " 
+				+ "      DATE_PART ('month', ?) <= (campground.open_to_mm::double precision)) " 
+				+ ") "
+				+ "GROUP BY campground.campground_id, site.site_id " 
+				+ "ORDER BY campground.campground_id, ROW_NUMBER " 
+				+ "      ) " 
+				+ "      row_filter WHERE ROW_NUMBER < 6"; 
+		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlReturnAllAvailableSites, search.getParkId(), search.getFromDate(), 
+				search.getToDate(), search.getFromDate(), search.getToDate(), search.getFromDate(), 
+				search.getFromDate(), search.getToDate(), search.getToDate());
 		
-//		List<Site> siteList = new ArrayList<Site>;
-//		String sqlReturnAllAvailableSites = ""
-		// TODO Auto-generated method stub
-		return null;
+		while (results.next()) {
+			Site newSite = new Site();
+			newSite = mapRowToSite(results);
+			siteList.add(newSite);
+		}
+		
+		return siteList;
 	}
 
 	@Override
@@ -100,6 +141,18 @@ public class JDBCParkDAO implements ParkDAO {
 		} else {
 			throw new RuntimeException ("Something went wrong while getting an id for the new park"); 
 		}
+	}
+	
+	private Site mapRowToSite(SqlRowSet results) {
+		Site newSite = new Site();
+		newSite.setSiteId(results.getLong("site_id"));
+		newSite.setCampgroundId(results.getInt("campground_id"));
+		newSite.setSiteNumber(results.getInt("site_number"));
+		newSite.setMaxOccupancy(results.getInt("max_occupancy"));
+		newSite.setAccessible(results.getBoolean("accessible"));
+		newSite.setMaxRVlength(results.getInt("max_rv_length"));
+		newSite.setUtilities(results.getBoolean("utilities"));
+		return newSite;
 	}
 
 }
