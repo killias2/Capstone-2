@@ -129,15 +129,31 @@ public class CampgroundCLI {
 		int parkId = thisPark.getParkId();
 		Map<String, Campground> campMap = makeCampgroundsUserList(parkId); //prints list of campgrounds to user
 		System.out.println();
+		
 		System.out.println("What would you like to do?");
 		System.out.println("1) Search for reservation date availability");
-		System.out.println("2) Return to " + thisPark.getParkName() + " National Park page"); //should go 
-		
+		System.out.println("2) Return to " + thisPark.getParkName() + " National Park page"); //TODO test all these going back things
+		String userInput = getUserInput();
+		if(userInput.equals("1")) {
+			runSearchCampsitesFromCamp(); //TODO write method
+		} //selecting 2 returns user to last layer
 		
 	}
 	
 	public void runParkwideReservationPage(Park thisPark) {
-		
+		System.out.println(thisPark.getParkName() + "National Park");
+		System.out.println("Parkwide Searches");
+		System.out.println();
+		System.out.println("1) Search campsite availability");
+		System.out.println("2) See all upcoming reservations");
+		System.out.println("3) Return to Park page");
+		String userInput = getUserInput();
+		if(userInput.equals("1")) {
+			runSearchCampsitesFromPark(); //TODO write method
+		}
+		else if(userInput.equals("2")) {
+			runListAllUpcomingReservations();  //TODO write method
+		} //selecting "3" should return user to last layer
 	}
 	
 	//helper methods
