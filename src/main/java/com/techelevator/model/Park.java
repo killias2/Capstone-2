@@ -11,6 +11,7 @@ public class Park {
 	private long area;
 	private long visitors;
 	private String description;
+	private int parkRow;
 	
 	public int getParkId() {
 		return parkId;
@@ -54,6 +55,13 @@ public class Park {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	public int getParkRow() {
+		return parkRow;
+	}
+	public void setParkRow(int parkRow) {
+		this.parkRow = parkRow;
+	}
+	
 	
 	
 

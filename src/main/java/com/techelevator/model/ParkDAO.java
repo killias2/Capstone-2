@@ -13,7 +13,7 @@ public interface ParkDAO {
 		//  Creates an instance of Campground for each row of campground table, and stores them all in a List
 	public List<Site> returnAllAvailableSites(ReservationSearch search);
 	public List<Site> returnAllAvailableSitesAdvanced(AdvancedSearch search);
-	public List<Reservation> returnAllReservationsNext30Days(LocalDate currentDate, int parkId);
+	public List<Reservation> returnAllReservationsNext30Days(int parkId);
 	
 	
 
