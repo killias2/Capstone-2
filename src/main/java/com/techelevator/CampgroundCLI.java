@@ -216,7 +216,7 @@ public class CampgroundCLI {
 			campName = camp.getCampName();
 			counter += 1;
 			campMap.put(Integer.toString(counter), camp);
-			System.out.println("(" + counter + ") " + campName);
+			System.out.println("(" + counter + ") " + campName + ", " + camp.getOpenFromMonth() + ", " + camp.getOpenToMonth() + ", $" + camp.getDailyFee());
 		}
 		return campMap;
 	}
