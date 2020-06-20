@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 
+import com.techelevator.model.Campground;
 import com.techelevator.model.CampgroundDAO;
 import com.techelevator.model.JDBCCampgroundDAO;
 import com.techelevator.model.JDBCParkDAO;
@@ -125,7 +126,14 @@ public class CampgroundCLI {
 		System.out.println();
 		System.out.println(" Name, Opens, Closes, Daily Fee"); //TODO make method to make this look nice
 		System.out.println();
-		//LEFT OFF HERE!! << going to do return all campgrounds
+		int parkId = thisPark.getParkId();
+		Map<String, Campground> campMap = makeCampgroundsUserList(parkId); //prints list of campgrounds to user
+		System.out.println();
+		System.out.println("What would you like to do?");
+		System.out.println("1) Search for reservation date availability");
+		System.out.println("2) Return to " + thisPark.getParkName() + " National Park page"); //should go 
+		
+		
 	}
 	
 	public void runParkwideReservationPage(Park thisPark) {
@@ -147,7 +155,19 @@ public class CampgroundCLI {
 		return parkMap;
 	}
 	
-	
+	public Map<String, Campground> makeCampgroundsUserList(int parkId){
+		List<Campground> campList = parkDAO.returnAllCampgrounds(parkId);
+		Map<String, Campground> campMap = new HashMap<>();
+		int counter = 0;
+		String campName = "";
+		for (Campground camp : campList) {
+			campName = camp.getCampName();
+			counter += 1;
+			campMap.put(Integer.toString(counter), camp);
+			System.out.println("(" + counter + ") " + campName);
+		}
+		return campMap;
+	}
 	
 }
 
@@ -177,19 +197,25 @@ public class CampgroundCLI {
 //	
 //}
 
-//public Map<Integer, Park> makeParkNamesOptionsList() {		//may need to add (List<Park> parkList)
+
+
+
+//public Map<String, Park> makeParkNamesOptionsList() {		//may need to add (List<Park> parkList)
 //	List<Park> parkList = parkDAO.returnAllParks();
-//	Map<Integer, Park> parkMap = new HashMap<>();
+//	Map<String, Park> parkMap = new HashMap<>();
 //	int counter = 0;
 //	String parkName = "";
 //	for (Park park : parkList) {
 //		parkName = park.getParkName();
 //		counter += 1;
-//		parkMap.put(counter, park);
+//		parkMap.put(Integer.toString(counter), park);
 //		System.out.println("(" + counter + ") " + parkName);
 //	}
 //	return parkMap;
 //}
+
+
+
 
 
 //public void displayParkInfo() { //accepts a park_id, prints corresp info
