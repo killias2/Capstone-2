@@ -123,6 +123,9 @@ public class CampgroundCLI {
 	public void runCampgroundsPage(Park thisPark) {
 		System.out.println(thisPark.getParkName() + " National Park Campgrounds");
 		System.out.println();
+		System.out.println(" Name, Opens, Closes, Daily Fee"); //TODO make method to make this look nice
+		System.out.println();
+		//LEFT OFF HERE!! << going to do return all campgrounds
 	}
 	
 	public void runParkwideReservationPage(Park thisPark) {
