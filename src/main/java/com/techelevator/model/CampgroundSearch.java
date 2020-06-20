@@ -14,9 +14,8 @@ public class CampgroundSearch extends ReservationSearch{
 		this.campgroundId = campgroundId;
 	}
 	
-	public CampgroundSearch(LocalDate searchFromDate, LocalDate searchToDate, int searchCampgroundId) {
+	public CampgroundSearch(LocalDate searchFromDate, LocalDate searchToDate) {
 		super(searchFromDate, searchToDate);
-		campgroundId = searchCampgroundId;
 	}
 
 }

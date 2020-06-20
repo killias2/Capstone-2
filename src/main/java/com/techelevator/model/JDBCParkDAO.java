@@ -112,8 +112,65 @@ public class JDBCParkDAO implements ParkDAO {
 
 	@Override
 	public List<Site> returnAllAvailableSitesAdvanced(AdvancedSearch search) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Site> siteList = new ArrayList<Site>();
+		String sqlReturnAllAvailableSites = "SELECT row_filter.* FROM (SELECT campground.campground_id, "
+				+ "site.site_id, site_number, max_occupancy, accessible, max_rv_length, utilities, "
+				+ "count(r.reservation_id) pop, ROW_NUMBER() OVER (PARTITION BY campground.campground_id "
+				+ "ORDER BY count(r.reservation_id) DESC, site.site_id) FROM site " 
+				+ "LEFT JOIN reservation r ON site.site_id = r.site_id " 
+				+ "LEFT JOIN campground ON site.campground_id = campground.campground_id WHERE "
+				+ "campground.park_id = ? AND site.site_id NOT IN ( "
+				+ "      SELECT r.site_id "
+				+ "      FROM reservation r "
+				+ "      WHERE "
+				+ "      (? BETWEEN r.from_date AND r.to_date) "
+				+ "      OR (? BETWEEN r.from_date AND r.to_date) " 
+				+ "      OR (? < r.from_date AND ? > r.from_date) " 
+				+ "        ) " 
+				+ "AND " 
+				+ "site.site_id IN ( " 
+				+ "      SELECT site.site_id " 
+				+ "      FROM site " 
+				+ "      WHERE " 
+				+ "      (DATE_PART ('month', ?) "
+				+ "      >= (campground.open_from_mm::double precision) " 
+				+ "      AND "
+				+ "      DATE_PART ('month', ?) <= "
+				+ "      (campground.open_to_mm::double precision)) " 
+				+ "      AND " 
+				+ "      (DATE_PART ('month', ?) >= "
+				+ "      (campground.open_from_mm::double precision) " 
+				+ "      AND " 
+				+ "      DATE_PART ('month', ?) <= (campground.open_to_mm::double precision)) " 
+				+ ") "
+				+ "AND "
+				+ "site.site_id IN ( "
+				+ "     SELECT site.site_id "
+				+ "		FROM site "
+				+ "		WHERE "
+				+ "		max_occupancy >= ? "
+				+ "     AND accessible = ? "
+				+ "		AND max_rv_length >= ? "
+				+ " 	AND utilities = ?"
+				+ "     ) "
+				+ "GROUP BY campground.campground_id, site.site_id " 
+				+ "ORDER BY campground.campground_id, ROW_NUMBER " 
+				+ "      ) " 
+				+ "      row_filter WHERE ROW_NUMBER < 6"; 
+		
+		
+		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlReturnAllAvailableSites, search.getParkId(), search.getFromDate(), 
+				search.getToDate(), search.getFromDate(), search.getToDate(), search.getFromDate(), 
+				search.getFromDate(), search.getToDate(), search.getToDate(), search.getMaxOccupancy(), search.isAccessible(),
+				search.getMaxRVLength(), search.isUtilities());
+		
+		while (results.next()) {
+			Site newSite = new Site();
+			newSite = mapRowToSite(results);
+			siteList.add(newSite);
+		}
+		
+		return siteList;
 	}
 
 	@Override

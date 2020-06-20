@@ -34,9 +34,9 @@ public class AdvancedSearch extends CampgroundSearch {
 		this.utilities = utilities;
 	}
 	
-	public AdvancedSearch(LocalDate searchFromDate, LocalDate searchToDate, int searchCampgroundId,
+	public AdvancedSearch(LocalDate searchFromDate, LocalDate searchToDate,
 			int searchMaxOccupancy, boolean isAccessible, int searchMaxRVLength, boolean isUtilities) {
-		super (searchFromDate, searchToDate, searchCampgroundId);
+		super (searchFromDate, searchToDate);
 		maxOccupancy = searchMaxOccupancy;
 		accessible = isAccessible;
 		maxRVLength = searchMaxRVLength;
