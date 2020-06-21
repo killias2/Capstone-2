@@ -60,8 +60,46 @@ public class JDBCCampgroundDAO implements CampgroundDAO {
 	@Override //TODO finish this method
 	public List<Site> returnTopSitesRequirements(AdvancedSearch search) {
 		List<Site> topSitesRequirements = new ArrayList<>();
-		String sqlReturnTopSitesRequirements = ""; //TODO write SQL query
-		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlReturnTopSitesRequirements);
+		String sqlReturnTopSitesRequirements = "SELECT campground.campground_id, site.site_id, site_number, max_occupancy, accessible, max_rv_length, utilities, count(r.reservation_id) pop "
+				+ "FROM site "
+				+ "LEFT JOIN reservation r ON site.site_id = r.site_id "
+				+ "LEFT JOIN campground ON site.campground_id = campground.campground_id "
+				+ "WHERE campground.campground_id = ? "
+				+ "AND "
+				+ "site.site_id NOT IN ( "
+				+ "SELECT r.site_id "
+				+ "FROM reservation r "
+				+ "WHERE " 
+				+ "(? BETWEEN r.from_date AND r.to_date) OR (? BETWEEN r.from_date AND r.to_date) "
+				+ "OR "
+				+ "(? < r.from_date AND ? > r.from_date) "
+				+ ") "
+				+ "AND "
+				+ "site.site_id IN ( "
+				+ "SELECT site.site_id "
+				+ "FROM site "
+				+ "WHERE "
+				+ "(DATE_PART ('month', ?) >= (campground.open_from_mm::double precision) "
+				+ "AND "
+				+ "DATE_PART ('month', ?) <= (campground.open_to_mm::double precision)) "
+				+ "AND "
+				+ "(DATE_PART ('month', ?) >= (campground.open_from_mm::double precision) "
+				+ "AND "
+				+ "DATE_PART ('month', ?) <= (campground.open_to_mm::double precision)) "
+				+ ") "
+				+ "AND "
+				+ "site.site_id IN ( "
+				+ "SELECT site.site_id "
+				+ "FROM site "
+				+ "WHERE max_occupancy >= ? "
+				+ "AND accessible = ? "
+				+ "AND max_rv_length >= ? "
+				+ "AND utilities = ? "
+				+ ") "
+				+ "GROUP BY site.site_id, campground.campground_id "
+				+ "ORDER BY pop DESC, site.site_id "
+				+ "LIMIT 5"; //TODO write SQL query
+		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlReturnTopSitesRequirements, search.getCampgroundId(), search.getFromDate(), search.getToDate(), search.getFromDate(), search.getToDate(), search.getFromDate(), search.getFromDate(), search.getToDate(), search.getToDate(), search.getMaxOccupancy(), search.isAccessible(), search.getMaxRVLength(), search.isUtilities());
 		
 		while(results.next()) {
 			topSitesRequirements.add(mapRowToSite(results));
