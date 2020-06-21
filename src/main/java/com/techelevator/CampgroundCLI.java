@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -14,6 +15,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 
+import com.techelevator.model.AdvancedSearch;
 import com.techelevator.model.Campground;
 import com.techelevator.model.CampgroundDAO;
 import com.techelevator.model.CampgroundSearch;
@@ -161,7 +163,10 @@ public class CampgroundCLI {
 		if(userInput.equals("1")) {
 			List<Site> searchResults = runSearchCampsitesFromCamp(campMap);
 			if (searchResults.size() > 0) {
-				printSitesList(searchResults);
+				System.out.println("Results:");
+				System.out.println();
+				System.out.println("Site No., Max Occup., Acc?, Max RV Length, Utility, Cost"); //TODO clean up display
+				makeCampSitesList(searchResults);
 				makeReservation(searchResults);
 			} else {
 				System.out.println("There are no available campsites that match the dates and/or search parameters.");
@@ -271,6 +276,7 @@ public class CampgroundCLI {
 	}
 	
 	public List<Site> runSearchCampsitesFromCamp(Map<String, Campground> campMap) {
+		List<Site> resultsList = new ArrayList<>();
 		System.out.println("Which campground? (Enter * to cancel search ___");
 		String userCampground = getUserInput();
 		int specificCampID = 0;
@@ -279,27 +285,54 @@ public class CampgroundCLI {
 			specificCampID = specificCamp.getCampgroundId();
 		}
 		
-		System.out.println("Desired arrival date? MM/DD/YYYY");
-		String userArrival = getUserInput();
-		LocalDate arrivalDate = null;
-		if (userInputIsValid()) {
-			//convert user input to yyyy-MM-dd
-			arrivalDate = LocalDate.parse(userArrival);	//check on this later
+		LocalDate fromDate = (LocalDate.now());
+		LocalDate toDate = (LocalDate.now());
+		boolean inputchecker = false;
+		while (inputchecker == false) {
+			System.out.println("What is the arrival date? __/__/____");
+			String arrivalDateInput = getUserInput();
+			if (isDateValid(arrivalDateInput) == false) {
+				System.out.println("I'm sorry, but please check to ensure that your date is valid");
+			}
+			else if (isDateValid(arrivalDateInput) == true) {
+				inputchecker = true;
+				fromDate = LocalDate.parse(arrivalDateInput, DateTimeFormatter.ofPattern("MM/dd/uuuu"));
+			}
+		}
+		inputchecker = false;
+		while (inputchecker == false) {
+			System.out.println("What is the departure date? __/__/____");
+			String departureDateInput = getUserInput();
+			if (isDateValid(departureDateInput) == false) {
+				System.out.println("I'm sorry, but please check to ensure that your date is valid");
+			}
+			else if (isDateValid(departureDateInput) == true) {
+				inputchecker = true;
+				toDate = LocalDate.parse(departureDateInput, DateTimeFormatter.ofPattern("MM/dd/uuuu"));
+			}
 		}
 		
-		System.out.println("Desired departure date? __/__/____");
-		String userDeparture = getUserInput();
-		LocalDate departureDate = null;
-		if () {
-			//convert user input to appropriate format
-			departureDate = LocalDate.parse(userDeparture);
+		System.out.println("Would you like to enter additional search parameters? Y/N");
+		String runAdvSearchInput = getUserInput();
+		if (runAdvSearchInput.equalsIgnoreCase("N")) {
+			CampgroundSearch campgroundSearch = new CampgroundSearch(fromDate, toDate);
+			campgroundSearch.setCampgroundId(specificCampID);
+			
+			resultsList = campgroundDAO.returnTopAvailableSites(campgroundSearch);
+			
+		} else if (runAdvSearchInput.equalsIgnoreCase("Y")) {
+			runAdvSearchFromCampground(fromDate, toDate);
+			
+			
 		}
-		
-		CampgroundSearch campgroundSearch = new CampgroundSearch(arrivalDate, departureDate);
-		campgroundSearch.setCampgroundId(specificCampID);
-		List<Site> resultsList = campgroundDAO.returnTopAvailableSites(campgroundSearch);
-		
 		return  resultsList;
+	}
+	
+	public runAdvSearchFromCampground(LocalDate arrivalDate, LocalDate departureDate) {
+		System.out.println("Number of people in your party: __");
+		
+		
+		AdvancedSearch campAdvSearch = new AdvancedSearch
 	}
 	
 	public String makeReservation(List<Site> searchResults) { //TODO: write method
@@ -372,11 +405,16 @@ public class CampgroundCLI {
 		return siteMap;
 	}
 	
-	public void printSitesList(List<Site> results) {
+	public Map<String, Site> makeCampSitesList(List<Site> results) {
+		Map<String, Site> siteMap = new HashMap<>();
+		//String siteName = "";
+		int siteNumber = 0;
 		for (Site result : results) { //TODO write method
 			siteNumber = result.getSiteNumber();
-			siteMap.put();
+			siteMap.put(Integer.toString(siteNumber), result);
+			System.out.println();
 		}
+		return siteMap;
 	}
 	
 	private int returnMaxLength(List<Campground> campList) {
@@ -593,4 +631,22 @@ public class CampgroundCLI {
 //
 //public void runCampgroundsPage() {
 //	//prints out 
+//}
+
+
+
+//System.out.println("Desired arrival date? __/__/____");
+//String userArrival = getUserInput();
+//LocalDate arrivalDate = null;
+//if (userInputIsValid()) {
+//	//convert user input to yyyy-MM-dd
+//	arrivalDate = LocalDate.parse(userArrival);	//check on this later
+//}
+//
+//System.out.println("Desired departure date? __/__/____");
+//String userDeparture = getUserInput();
+//LocalDate departureDate = null;
+//if () {
+//	//convert user input to appropriate format
+//	departureDate = LocalDate.parse(userDeparture);
 //}
