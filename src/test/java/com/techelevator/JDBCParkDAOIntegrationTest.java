@@ -116,16 +116,16 @@ public class JDBCParkDAOIntegrationTest extends DAOIntegrationTest{
 	@Test
 	public void return_top_sites_park_wide_currentDB() { //more robust, but current DB dependent
 		List<Site> siteList = new ArrayList<>();
-		LocalDate fromDate = LocalDate.of(2020, 7, 17);
-		LocalDate toDate = LocalDate.of(2020,  07, 23);
+		LocalDate fromDate = LocalDate.of(2020, 07, 17);
+		LocalDate toDate = LocalDate.of(2020, 07, 23);
 		ReservationSearch search = new ReservationSearch(fromDate, toDate);
 		search.setParkId(1);
 		siteList = dao.returnAllAvailableSites(search);
 		
 		Site expectedSite1 = new Site();
 		expectedSite1.setCampgroundId(1);
-		expectedSite1.setSiteId(1);
-		expectedSite1.setSiteNumber(1);
+		expectedSite1.setSiteId(46);
+		expectedSite1.setSiteNumber(46);
 		expectedSite1.setMaxOccupancy(6);
 		expectedSite1.setAccessible(false);
 		expectedSite1.setMaxRVlength(0);
@@ -139,11 +139,21 @@ public class JDBCParkDAOIntegrationTest extends DAOIntegrationTest{
 		expectedSite2.setAccessible(false);
 		expectedSite2.setMaxRVlength(0);
 		expectedSite2.setUtilities(false);
+		
+		Site expectedSite3 = new Site();
+		expectedSite3.setCampgroundId(1);
+		expectedSite3.setSiteId(25);
+		expectedSite3.setSiteNumber(25);
+		expectedSite3.setMaxOccupancy(6);
+		expectedSite3.setAccessible(false);
+		expectedSite3.setMaxRVlength(0);
+		expectedSite3.setUtilities(false);
 			
 			
 		Assert.assertTrue(siteList.size() >= 1);
 		assertSitesAreEqual(expectedSite1, siteList.get(0));
 		assertSitesAreEqual(expectedSite2, siteList.get(5));
+		assertSitesAreEqual(expectedSite3, siteList.get(4));
 	}
 	
 	
@@ -234,23 +244,23 @@ public class JDBCParkDAOIntegrationTest extends DAOIntegrationTest{
 		
 		Reservation expectedRes1 = new Reservation();
 		expectedRes1.setReservationId(1);
-		expectedRes1.setSiteId(1);
-		expectedRes1.setReservationName("Smith Family Reservation");
-		expectedRes1.setFromDate(LocalDate.of(2020, 06, 16));
-		expectedRes1.setToDate(LocalDate.of(2020, 06, 20));
-		expectedRes1.setCreateDate(LocalDate.of(2020, 06, 18));
+		expectedRes1.setSiteNumber(1);
+		expectedRes1.setCampName("Blackwoods");
+		expectedRes1.setFromDate(LocalDate.of(2020, 06, 19));
+		expectedRes1.setToDate(LocalDate.of(2020, 06, 23));
+		expectedRes1.setCreateDate(LocalDate.of(2020, 06, 21));
 		
 		Reservation expectedRes2 = new Reservation();
-		expectedRes2.setReservationId(9);
-		expectedRes2.setSiteId(10);
-		expectedRes2.setReservationName("Astley Family Reservation");
-		expectedRes2.setFromDate(LocalDate.of(2020, 07, 02));
-		expectedRes2.setToDate(LocalDate.of(2020, 07, 9));
-		expectedRes2.setCreateDate(LocalDate.of(2020, 06, 18));
+		expectedRes2.setReservationId(7);
+		expectedRes2.setSiteNumber(9);
+		expectedRes2.setCampName("Blackwoods");
+		expectedRes2.setFromDate(LocalDate.of(2020, 06, 21));
+		expectedRes2.setToDate(LocalDate.of(2020, 06, 22));
+		expectedRes2.setCreateDate(LocalDate.of(2020, 06, 21));
 		
 		Assert.assertTrue(resList.size() >= 1);
-		assertReservationsAreEqual(expectedRes1, resList.get(0));
-		assertReservationsAreEqual(expectedRes2, resList.get(5));
+		assertReservationsAreEqualPW(expectedRes1, resList.get(0));
+		assertReservationsAreEqualPW(expectedRes2, resList.get(5));
 	}
 	
 	
