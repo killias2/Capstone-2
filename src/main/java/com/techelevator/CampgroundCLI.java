@@ -241,7 +241,9 @@ public class CampgroundCLI {
 					newReservation.setSiteId(localMap.get(input).getSiteId());
 					newReservation.setReservationName(reservationName);
 					newReservation.setCreateDate(LocalDate.now());
-					reservationDAO.addReservation(newReservation);
+					reservationDAO.addReservation(newReservation);				
+					inputchecker = true;
+					runParkwideReservationPage(thisPark);
 					System.out.println("The reservation has been made and the confirmation id is " + newReservation.getReservationId());
 				} else {
 					System.out.println("I'm sorry, you did not select an available site, please try again.");
