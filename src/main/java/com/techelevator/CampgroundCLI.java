@@ -141,12 +141,13 @@ public class CampgroundCLI {
 	public void runCampgroundsPage(Park thisPark) {
 		List<Campground> campList = parkDAO.returnAllCampgrounds(thisPark.getParkId());
 		int maxLength = returnMaxLength(campList);
+		int monthTab = returnMonthTab(campList);
 		System.out.println(thisPark.getParkName() + " National Park Campgrounds");
 		System.out.println();
 		System.out.println("Name" + tabFormatterTitle(maxLength) + "Opens\tCloses\tDaily Fee"); //TODO make method to make this look nice
 		System.out.println();
 		int parkId = thisPark.getParkId();
-		Map<String, Campground> campMap = makeCampgroundsUserList(campList, maxLength); //prints list of campgrounds to user
+		Map<String, Campground> campMap = makeCampgroundsUserList(campList, maxLength, monthTab); //prints list of campgrounds to user
 		System.out.println();
 		
 		System.out.println("What would you like to do?");
@@ -242,7 +243,7 @@ public class CampgroundCLI {
 		return parkMap;
 	}
 	
-	public Map<String, Campground> makeCampgroundsUserList(List<Campground> campList, int maxLength){
+	public Map<String, Campground> makeCampgroundsUserList(List<Campground> campList, int maxLength, int monthTab){
 		Map<String, Campground> campMap = new HashMap<>();
 		int counter = 0;
 		String campName = "";
@@ -250,7 +251,7 @@ public class CampgroundCLI {
 			campName = camp.getCampName();
 			counter += 1;
 			campMap.put(Integer.toString(counter), camp);
-			System.out.println("(" + counter + ") " + campName + tabFormatter2(campName, maxLength) + camp.getOpenFromMonth() + "\t" + camp.getOpenToMonth() + "\t$" + camp.getDailyFee());
+			System.out.println("(" + counter + ") " + campName + tabFormatter2(campName, maxLength) + mapMMToMonth(camp.getOpenFromMonth()) + tabFormatterMonth(monthTab) + mapMMToMonth(camp.getOpenToMonth()) + "\t$" + camp.getDailyFee());
 		}
 		return campMap;
 	}
@@ -269,6 +270,16 @@ public class CampgroundCLI {
 			}
 		}
 		return maxLength;
+	}
+	
+	private int returnMonthTab(List<Campground> campList) {
+		int tabCount = 1;
+		for (int i = 0; i < campList.size(); i++) {
+			if (campList.get(i).getOpenFromMonth().equals("09"){
+				tabCount = 2;
+			}
+		}
+		return tabCount;
 	}
 	
 	private String tabFormatterTitle(int maxLength) {
@@ -305,6 +316,15 @@ public class CampgroundCLI {
 		while (tabCount > 0) {
 			tabs = tabs + "\t";
 			tabCount --;
+		}
+		return tabs;
+	}
+	
+	private String tabFormatterMonth(int monthTab) {
+		String tabs = "";
+		while (monthTab > 0) {
+			tabs = tabs + "\t";
+			monthTab --;
 		}
 		return tabs;
 	}
