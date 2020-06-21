@@ -157,7 +157,7 @@ public class CampgroundCLI {
 			List<Site> searchResults = runSearchCampsitesFromCamp(campMap);
 			if (searchResults.size() > 0) {
 				printSitesList(searchResults);
-				makeReservation();
+				makeReservation(searchResults);
 			} else {
 				System.out.println("There are no available campsites that match the dates and/or search parameters.");
 			}
@@ -165,7 +165,7 @@ public class CampgroundCLI {
 		
 	}
 	
-	public void runParkwideReservationPage(Park thisPark) {
+	public void runParkwideReservationPage(Park thisPark) {		//OPTIONAL << do last
 		System.out.println(thisPark.getParkName() + "National Park");
 		System.out.println("Parkwide Searches");
 		System.out.println();
@@ -213,8 +213,21 @@ public class CampgroundCLI {
 		return  resultsList;
 	}
 	
-	public makeReservation() { //TODO: write method
+	public String makeReservation(List<Site> searchResults) { //TODO: write method
+		boolean isReserving = true;
+		while (isReserving) {
+			System.out.println("Which site would you like to reserve (enter 0 to cancel)?  __");
+			String userInput = getUserInput();
+			if(userInput.equals("0")) {
+//				isReserving = false;
+				return "Reservation Canceled";
+			} else {
+				
+			}
+			
+		}
 		
+		return "";
 	}
 	
 //	public List<Site> runParkwideSearchCampsiteAvailability(Park thisPark){
@@ -256,7 +269,7 @@ public class CampgroundCLI {
 	}
 	
 	public void printSitesList(List<Site> results) {
-		for (Site result : results) {
+		for (Site result : results) { //TODO write method
 			
 		}
 	}
