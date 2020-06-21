@@ -1,5 +1,7 @@
 package com.techelevator;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,13 +85,13 @@ public class CampgroundCLI {
 		return new Scanner(System.in).nextLine();
 	}
 	
-//	public boolean userInputIsValid(String userInput) { //checks for all the weird things
-//		if() {
-//			return true;
-//		} 
-//		System.out.println("Invalid selection");
-//		return false;
-//	}
+	public boolean userInputIsValid(String userInput) { //checks for all the weird things
+		if() {
+			return true;
+		} 
+		System.out.println("Invalid selection");
+		return false;
+	}
 	
 	
 	//subpage methods
@@ -149,7 +151,7 @@ public class CampgroundCLI {
 		System.out.println("2) Return to " + thisPark.getParkName() + " National Park page"); //TODO test all these going back things
 		String userInput = getUserInput();
 		if(userInput.equals("1")) {
-//			runSearchCampsitesFromCamp(campMap);
+			runSearchCampsitesFromCamp(campMap);
 		} //selecting 2 returns user to last layer
 		
 	}
@@ -170,17 +172,37 @@ public class CampgroundCLI {
 		} //selecting "3" should return user to last layer
 	}
 	
-//	public List<Site> runSearchCampsitesFromCamp(Map<String, Campground> campMap) {
-//		System.out.println("Which campground? (Enter * to cancel search ___");
-//		String userInput = getUserInput();
-//		if (campMap.containsKey(userInput)) {
-//			Campground specificCamp = campMap.get(userInput);
-//		}
-//		//TODO FINISH THIS; think will need to pass campgroundID into campgroundsearch constructor
-//		CampgroundSearch campgroundSearch = new CampgroundSearch();
-//		List<Site> resultsList = campgroundDAO.returnTopAvailableSites(search);
-//		return  resultsList;
-//	}
+	public List<Site> runSearchCampsitesFromCamp(Map<String, Campground> campMap) {
+		System.out.println("Which campground? (Enter * to cancel search ___");
+		String userCampground = getUserInput();
+		int specificCampID = 0;
+		if (campMap.containsKey(userCampground)) {
+			Campground specificCamp = campMap.get(userCampground); //map contains park id
+			specificCampID = specificCamp.getCampgroundId();
+		}
+		
+		System.out.println("Desired arrival date? __/__/____");
+		String userArrival = getUserInput();
+		LocalDate arrivalDate = null;
+		if (userInputIsValid()) {
+			//convert user input to yyyy-MM-dd
+			arrivalDate = LocalDate.parse(userArrival);	//check on this later
+		}
+		
+		System.out.println("Desired departure date? __/__/____");
+		String userDeparture = getUserInput();
+		LocalDate departureDate = null;
+		if () {
+			//convert user input to appropriate format
+			departureDate = LocalDate.parse(userDeparture);
+		}
+		
+		CampgroundSearch campgroundSearch = new CampgroundSearch(arrivalDate, departureDate);
+		campgroundSearch.setCampgroundId(specificCampID);
+		List<Site> resultsList = campgroundDAO.returnTopAvailableSites(campgroundSearch);
+		
+		return  resultsList;
+	}
 	
 //	public List<Site> runParkwideSearchCampsiteAvailability(Park thisPark){
 //		
