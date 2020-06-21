@@ -254,9 +254,9 @@ public class CampgroundCLI {
 		while (inputchecker == false) {			
 			System.out.println("Results Matching Your Search Criteria");
 			int maxLength = returnMaxLengthSite(siteList);
-			System.out.println("Campground" + tabFormatterTitleParkwideSites(maxLength) + "Site No.\tMax Occup.\tAccessible\tRV Len\tUtility\tCost");
+			System.out.println("Campground" + tabFormatterTitleParkwideSites(maxLength) + "Site ID\tSite No.\tMax Occup.\tAccessible\tRV Len\tUtility\tCost");
 			Map<String, Site> localMap = makeParkwideResList(siteList, maxLength, resLength);
-			System.out.println("Which site should be reserved (enter 0 to cancel)?");
+			System.out.println("Which site (Enter Site ID) should be reserved (enter 0 to cancel)?");
 			String input = getUserInput();
 			if (input.equals("0")) {
 				inputchecker = true;
@@ -277,6 +277,7 @@ public class CampgroundCLI {
 					inputchecker = true;
 					runParkwideReservationPage(thisPark);
 					System.out.println("The reservation has been made and the confirmation id is " + newReservation.getReservationId());
+					
 				} else {
 					System.out.println("");
 					System.out.println("I'm sorry, you did not select an available site, please try again.");
@@ -454,7 +455,7 @@ public class CampgroundCLI {
 		for (Site site : siteList) {
 			siteName = site.getCampName();
 			siteMap.put(Long.toString(site.getSiteId()), site);
-			System.out.println(siteName + tabFormatterParkwideSites(maxLength, siteName) + site.getSiteId() + "\t\t" + site.getMaxOccupancy()
+			System.out.println(siteName + tabFormatterParkwideSites(maxLength, siteName) + site.getSiteId() + "\t" + + site.getSiteNumber() + "\t\t" + site.getMaxOccupancy()
 			+ "\t\t" + site.isAccessible() + "\t\t" + site.getMaxRVlength() + "\t" + site.isUtilities() + "\t" + (site.getDailyFee() * (resLength + 1)));
 		}
 		return siteMap;
