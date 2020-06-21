@@ -191,7 +191,7 @@ public class CampgroundCLI {
 			specificCampID = specificCamp.getCampgroundId();
 		}
 		
-		System.out.println("Desired arrival date? __/__/____");
+		System.out.println("Desired arrival date? MM/DD/YYYY");
 		String userArrival = getUserInput();
 		LocalDate arrivalDate = null;
 		if (userInputIsValid()) {
