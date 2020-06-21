@@ -258,7 +258,9 @@ public class CampgroundCLI {
 	private String tabFormatterTitle(int maxLength) {
 		
 		int tabCount = 1;
-		if ((maxLength - 4) % 8 == 0) {
+		if (maxLength < 4) {
+			tabCount = 1;
+		} else if ((maxLength - 4) % 8 == 0) {
 			tabCount += ((maxLength - 4) / 8);
 		} else {
 			tabCount += ((maxLength - 4) / 8) + 1;
@@ -273,7 +275,9 @@ public class CampgroundCLI {
 	
 	private String tabFormatter2(String campName, int maxLength) {
 		int tabCount = 0;
-		if ((maxLength - 4) % 8 == 0) {
+		if (maxLength < 4) {
+			tabCount = 1;
+		} else if ((maxLength - 4) % 8 == 0) {
 			tabCount += ((maxLength - 4) / 8);
 		} else {
 			tabCount += ((maxLength - 4) / 8) + 1;
