@@ -194,7 +194,7 @@ public class CampgroundCLI {
 			System.out.println("What is the arrival date? __/__/____");
 			String arrivalDateInput = getUserInput();
 			if (isDateValid(arrivalDateInput) == false) {
-				System.out.println("I'm sorry, but please check to insure that your date is valid");
+				System.out.println("I'm sorry, but please check to ensure that your date is valid");
 			}
 			else if (isDateValid(arrivalDateInput) == true) {
 				inputchecker = true;
@@ -206,7 +206,7 @@ public class CampgroundCLI {
 			System.out.println("What is the departure date? __/__/____");
 			String arrivalDateInput = getUserInput();
 			if (isDateValid(arrivalDateInput) == false) {
-				System.out.println("I'm sorry, but please check to insure that your date is valid");
+				System.out.println("I'm sorry, but please check to ensure that your date is valid");
 			}
 			else if (isDateValid(arrivalDateInput) == true) {
 				inputchecker = true;
@@ -277,7 +277,7 @@ public class CampgroundCLI {
 			specificCampID = specificCamp.getCampgroundId();
 		}
 		
-		System.out.println("Desired arrival date? __/__/____");
+		System.out.println("Desired arrival date? MM/DD/YYYY");
 		String userArrival = getUserInput();
 		LocalDate arrivalDate = null;
 		if (userInputIsValid()) {
@@ -304,13 +304,16 @@ public class CampgroundCLI {
 		boolean isReserving = true;
 		while (isReserving) {
 			System.out.println("Which site would you like to reserve (enter 0 to cancel)?  __");
-			String userInput = getUserInput();
-			if(userInput.equals("0")) {
+			String siteNumberInput = getUserInput();
+			if(siteNumberInput.equals("0")) {
 //				isReserving = false;
 				return "Reservation Canceled";
-			} else {
+			} else if (searchResults.contains(siteNumberInput)) {  //might need to 
 				
-			}
+			} 
+			System.out.println("Enter your name __");
+			String nameInput = getUserInput();
+			
 			
 		}
 		
@@ -369,7 +372,8 @@ public class CampgroundCLI {
 	
 	public void printSitesList(List<Site> results) {
 		for (Site result : results) { //TODO write method
-			
+			siteNumber = result.getSiteNumber();
+			siteMap.put();
 		}
 	}
 	
