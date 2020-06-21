@@ -80,15 +80,6 @@ public abstract class DAOIntegrationTest {
 		assertEquals(expected.getCreateDate(), actual.getCreateDate());
 	}
 	
-	protected void assertReservationsAreEqualPW(Reservation expected, Reservation actual) {
-		assertEquals(expected.getReservationId(), actual.getReservationId());
-		assertEquals(expected.getSiteNumber(), actual.getSiteNumber());
-		assertEquals(expected.getCampName(), actual.getCampName());
-		assertEquals(expected.getFromDate(), actual.getFromDate());
-		assertEquals(expected.getToDate(), actual.getToDate());
-		assertEquals(expected.getCreateDate(), actual.getCreateDate());
-	}
-	
 	protected void assertSitesAreEqual(Site expected, Site actual) {
 		assertEquals(expected.getSiteId(), actual.getSiteId());
 		assertEquals(expected.getCampgroundId(), actual.getCampgroundId());

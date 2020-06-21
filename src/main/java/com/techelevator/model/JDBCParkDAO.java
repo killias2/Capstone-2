@@ -176,7 +176,7 @@ public class JDBCParkDAO implements ParkDAO {
 	@Override
 	public List<Reservation> returnAllReservationsNext30Days(int parkId) {
 		List<Reservation> resList = new ArrayList<>();
-		String sqlReturn30DaysReservations = "SELECT campground.name, reservation_id, s.site_number, from_date, " +
+		String sqlReturn30DaysReservations = "SELECT campground.name as campname, r.name as resname, reservation_id, s.site_number, from_date, " +
 				"to_date, create_date\n" + 
 				"FROM reservation r\n" + 
 				"JOIN site s ON r.site_id = s.site_id\n" + 
@@ -189,7 +189,8 @@ public class JDBCParkDAO implements ParkDAO {
 				"OR\n" + 
 				"to_date BETWEEN (CURRENT_DATE) AND (CURRENT_DATE + INTERVAL '30 day')\n" + 
 				"OR\n" + 
-				"CURRENT_DATE BETWEEN from_date AND to_date)";
+				"CURRENT_DATE BETWEEN from_date AND to_date) " +
+				"ORDER BY from_date, to_date, campname, site_number";
 		
 				SqlRowSet results = jdbcTemplate.queryForRowSet(sqlReturn30DaysReservations, parkId);
 				
@@ -239,9 +240,9 @@ public class JDBCParkDAO implements ParkDAO {
 	private Reservation mapRowToReservation(SqlRowSet results) {
 		Reservation someReservation = new Reservation();
 		someReservation.setReservationId(results.getLong("reservation_id"));
-		someReservation.setCampName(results.getString("name"));
+		someReservation.setCampName(results.getString("campname"));
 		someReservation.setSiteNumber(results.getInt("site_number"));
-		//someReservation.setReservationName(results.getString("r.name"));
+		someReservation.setReservationName(results.getString("resname"));
 		someReservation.setFromDate(results.getDate("from_date").toLocalDate());
 		someReservation.setToDate(results.getDate("to_date").toLocalDate());
 		someReservation.setCreateDate(results.getDate("create_date").toLocalDate());

@@ -140,6 +140,14 @@ public class CampgroundCLI {
 		}
 		else if(userInput.equals("2")) {
 			runParkwideReservationPage(thisPark);
+		} else if (userInput.equals("3")) {
+			//runAllParksPage(); //TO-DO
+		} else {
+			System.out.println("");
+			System.out.println("This is not a valid menu option");
+			System.out.println("Please check the menu and try again. Thank you!");
+			System.out.println("");
+			runParkwideReservationPage(thisPark);
 		}
 		
 	}
@@ -176,19 +184,28 @@ public class CampgroundCLI {
 	}
 	
 	public void runParkwideReservationPage(Park thisPark) {		//OPTIONAL << do last
-		System.out.println(thisPark.getParkName() + "National Park");
+		System.out.println(thisPark.getParkName() + " National Park");
 		System.out.println("Parkwide Searches");
 		System.out.println();
 		System.out.println("1) Search campsite availability");
 		System.out.println("2) See all upcoming reservations");
 		System.out.println("3) Return to Park page");
-		String userInput = getUserInput();
+		String userInput = "";
+		userInput = getUserInput();
 		if(userInput.equals("1")) {
-			runParkwideSearchCampsiteAvailability(thisPark); //TODO write method
+			runParkwideSearchCampsiteAvailability(thisPark);
 		}
 		else if(userInput.equals("2")) {
-//			runListAllUpcomingReservations();  //TODO write method 
-		} //selecting "3" should return user to last layer
+			runListAllUpcomingReservations(thisPark); 
+		} else if (userInput.equals("3")) {
+			runSpecificParkPage(thisPark);
+		} else {
+			System.out.println("");
+			System.out.println("This is not a valid menu option");
+			System.out.println("Please check the menu and try again. Thank you!");
+			System.out.println("");
+			runParkwideReservationPage(thisPark);
+		}
 	}
 	
 	public void runParkwideSearchCampsiteAvailability(Park thisPark) {
@@ -199,7 +216,9 @@ public class CampgroundCLI {
 			System.out.println("What is the arrival date? __/__/____");
 			String arrivalDateInput = getUserInput();
 			if (isDateValid(arrivalDateInput) == false) {
+				System.out.println("");
 				System.out.println("I'm sorry, but please check to ensure that your date is valid");
+				System.out.println("");
 			}
 			else if (isDateValid(arrivalDateInput) == true) {
 				inputchecker = true;
@@ -211,7 +230,9 @@ public class CampgroundCLI {
 			System.out.println("What is the departure date? __/__/____");
 			String arrivalDateInput = getUserInput();
 			if (isDateValid(arrivalDateInput) == false) {
+				System.out.println("");
 				System.out.println("I'm sorry, but please check to ensure that your date is valid");
+				System.out.println("");
 			}
 			else if (isDateValid(arrivalDateInput) == true) {
 				inputchecker = true;
@@ -223,6 +244,13 @@ public class CampgroundCLI {
 		List<Site> siteList = parkDAO.returnAllAvailableSites(search);
 		long resLength = ChronoUnit.DAYS.between(fromDate, toDate);
 		inputchecker = false;
+		if (siteList.isEmpty()) {
+			System.out.println("");
+			System.out.println("No Results Match Your Search Criteria");
+			System.out.println("Please Try Another Search");
+			System.out.println("");
+			runParkwideSearchCampsiteAvailability(thisPark);
+		}
 		while (inputchecker == false) {			
 			System.out.println("Results Matching Your Search Criteria");
 			int maxLength = returnMaxLengthSite(siteList);
@@ -236,7 +264,6 @@ public class CampgroundCLI {
 			}
 			else {
 				if (localMap.containsKey(input)){
-					long siteNumber = Long.parseLong(input);
 					inputchecker = true;
 					System.out.println("What name should the reservation be made under? (80 characters max)");
 					String reservationName = getUserInput();
@@ -251,10 +278,32 @@ public class CampgroundCLI {
 					runParkwideReservationPage(thisPark);
 					System.out.println("The reservation has been made and the confirmation id is " + newReservation.getReservationId());
 				} else {
+					System.out.println("");
 					System.out.println("I'm sorry, you did not select an available site, please try again.");
+					System.out.println("");
 				}
 			}
 		}
+	}
+	
+	private void runListAllUpcomingReservations(Park thisPark) {
+		List<Reservation> resList = parkDAO.returnAllReservationsNext30Days(thisPark.getParkId());
+		if (resList.isEmpty()) {
+			System.out.println("");
+			System.out.println("There are no upcoming reservations at " + thisPark.getParkName());
+			System.out.println("");
+			runParkwideReservationPage(thisPark);
+		}
+		System.out.println("Here is a list of all reservations at " + thisPark.getParkName());
+		System.out.println("Campground\tSite\tFrom Date\tTo Date\t\tCreate Date\tReservation Name");
+		int maxLength = returnMaxLengthRes(resList);
+		for (int i = 0; i < resList.size(); i++) {
+			Reservation thisRes = resList.get(i);
+			System.out.println(thisRes.getCampName() + tabFormatterParkwideSites(maxLength, thisRes.getCampName()) + thisRes.getSiteNumber() + "\t" + 
+			thisRes.getFromDate() + "\t" + thisRes.getToDate() + "\t" + thisRes.getCreateDate() + "\t" 
+			+ thisRes.getReservationName());
+		}
+		runParkwideReservationPage(thisPark);
 	}
 	
 	public boolean isDateValid(String inputDate) {
@@ -437,6 +486,16 @@ public class CampgroundCLI {
 		return maxLength;
 	}
 	
+	private int returnMaxLengthRes(List<Reservation> resList) {
+		int maxLength = 0;
+		for (int i = 0; i < resList.size(); i++) {
+			if (maxLength < resList.get(i).getCampName().length()) {
+				maxLength = resList.get(i).getCampName().length();
+			}
+		}
+		return maxLength;
+	}
+	
 	
 	private int returnMonthTab(List<Campground> campList) {
 		int tabCount = 1;
@@ -498,12 +557,11 @@ public class CampgroundCLI {
 	private String tabFormatterTitleParkwideSites(int maxLength) {
 		
 		int tabCount = 0;
-		if (maxLength < 8) {
+		if (maxLength < 9) {
 			tabCount = 0;
-		} else if ((maxLength) % 8 == 0) {
-			tabCount += ((maxLength) / 8);
-		} else {
-			tabCount += ((maxLength) / 8) + 1;
+		} 
+		else {
+			tabCount += (maxLength) / 8;
 		}
 		String tabs = "";
 		while (tabCount > 0) {
@@ -514,9 +572,9 @@ public class CampgroundCLI {
 	}
 	
 	private String tabFormatterParkwideSites(int maxLength, String campName) {
-		int tabCount = 1;
+		int tabCount = 0;
 		if (maxLength < 9) {
-			tabCount = 1;
+			tabCount = 0;
 		} else if (maxLength % 8 == 0) {
 			tabCount += (maxLength / 8);
 		} else {

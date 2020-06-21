@@ -243,24 +243,26 @@ public class JDBCParkDAOIntegrationTest extends DAOIntegrationTest{
 		resList = dao.returnAllReservationsNext30Days(parkId);
 		
 		Reservation expectedRes1 = new Reservation();
-		expectedRes1.setReservationId(1);
-		expectedRes1.setSiteNumber(1);
+		expectedRes1.setReservationId(37);
+		expectedRes1.setSiteNumber(45);
 		expectedRes1.setCampName("Blackwoods");
-		expectedRes1.setFromDate(LocalDate.of(2020, 06, 19));
-		expectedRes1.setToDate(LocalDate.of(2020, 06, 23));
+		expectedRes1.setReservationName("Bill Board");
+		expectedRes1.setFromDate(LocalDate.of(2020, 06, 12));
+		expectedRes1.setToDate(LocalDate.of(2020, 06, 22));
 		expectedRes1.setCreateDate(LocalDate.of(2020, 06, 21));
 		
 		Reservation expectedRes2 = new Reservation();
-		expectedRes2.setReservationId(7);
-		expectedRes2.setSiteNumber(9);
+		expectedRes2.setReservationId(3);
+		expectedRes2.setSiteNumber(2);
 		expectedRes2.setCampName("Blackwoods");
-		expectedRes2.setFromDate(LocalDate.of(2020, 06, 21));
-		expectedRes2.setToDate(LocalDate.of(2020, 06, 22));
+		expectedRes2.setReservationName("Jones Reservation");
+		expectedRes2.setFromDate(LocalDate.of(2020, 06, 19));
+		expectedRes2.setToDate(LocalDate.of(2020, 06, 23));
 		expectedRes2.setCreateDate(LocalDate.of(2020, 06, 21));
 		
 		Assert.assertTrue(resList.size() >= 1);
-		assertReservationsAreEqualPW(expectedRes1, resList.get(0));
-		assertReservationsAreEqualPW(expectedRes2, resList.get(5));
+		assertReservationsAreEqual(expectedRes1, resList.get(0));
+		assertReservationsAreEqual(expectedRes2, resList.get(5));
 	}
 	
 	
