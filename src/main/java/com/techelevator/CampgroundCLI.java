@@ -138,7 +138,7 @@ public class CampgroundCLI {
 	public void runCampgroundsPage(Park thisPark) {
 		System.out.println(thisPark.getParkName() + " National Park Campgrounds");
 		System.out.println();
-		System.out.println(" Name, Opens, Closes, Daily Fee"); //TODO make method to make this look nice
+		System.out.println("Name\t\t\tOpens\tCloses\tDaily Fee"); //TODO make method to make this look nice
 		System.out.println();
 		int parkId = thisPark.getParkId();
 		Map<String, Campground> campMap = makeCampgroundsUserList(parkId); //prints list of campgrounds to user
@@ -202,7 +202,7 @@ public class CampgroundCLI {
 			parkName = park.getParkName();
 			counter += 1;
 			parkMap.put(Integer.toString(counter), park);
-			System.out.println("(" + counter + ") " + parkName);
+			System.out.println(counter + ") " + parkName); //deleted "(" + before counter
 		}
 		return parkMap;
 	}
@@ -216,9 +216,54 @@ public class CampgroundCLI {
 			campName = camp.getCampName();
 			counter += 1;
 			campMap.put(Integer.toString(counter), camp);
-			System.out.println("(" + counter + ") " + campName + ", " + camp.getOpenFromMonth() + ", " + camp.getOpenToMonth() + ", $" + camp.getDailyFee());
+			System.out.println("(" + counter + ") " + campName + tabFormatter(campName) + camp.getOpenFromMonth() + "\t" + camp.getOpenToMonth() + "\t$" + camp.getDailyFee());
 		}
 		return campMap;
+	}
+	
+	private String tabFormatter(String campName) {
+		String tabs = "";
+		int divider = 11;
+		int tabCount = campName.length();
+		if (tabCount % divider > 0) {
+			tabCount = (tabCount / divider) + 1;
+		} else {
+			tabCount = tabCount / divider;
+		}
+		tabCount = 3 - tabCount;
+		while (tabCount > 0) {
+			tabs = tabs + "\t";
+			tabCount --;
+		}
+		return tabs;
+	}
+	
+	private String mapMMToMonth (String mM) {
+		if (mM.equals("01")) {
+			return "January";
+		} else if (mM.equals("02")) {
+			return "February";
+		} else if (mM.equals("03")) {
+			return "March";
+		} else if (mM.equals("04")) {
+			return "April";
+		} else if (mM.equals("05")) {
+			return "May";
+		} else if (mM.equals("06")) {
+			return "June";
+		} else if (mM.equals("07")) {
+			return "July";
+		} else if (mM.equals("08")) {
+			return "August";
+		} else if (mM.equals("09")) {
+			return "September";
+		} else if (mM.equals("10")) {
+			return "October";
+		} else if (mM.equals("11")) {
+			return "November";
+		} else if (mM.equals("12")) {
+			return "December";
+		} else { return "DataNotAvailable";}
 	}
 	
 }
