@@ -64,7 +64,7 @@ public class JDBCParkDAO implements ParkDAO {
 	public List<Site> returnAllAvailableSites(ReservationSearch search) {
 		List<Site> siteList = new ArrayList<Site>();
 		String sqlReturnAllAvailableSites = "SELECT row_filter.* FROM (SELECT campground.campground_id, "
-				+ "site.site_id, site_number, max_occupancy, accessible, max_rv_length, utilities, "
+				+ "campground.name, site.site_id, site_number, max_occupancy, accessible, max_rv_length, utilities, "
 				+ "count(r.reservation_id) pop, ROW_NUMBER() OVER (PARTITION BY campground.campground_id "
 				+ "ORDER BY count(r.reservation_id) DESC, site.site_id) FROM site " 
 				+ "LEFT JOIN reservation r ON site.site_id = r.site_id " 
@@ -114,7 +114,7 @@ public class JDBCParkDAO implements ParkDAO {
 	public List<Site> returnAllAvailableSitesAdvanced(AdvancedSearch search) {
 		List<Site> siteList = new ArrayList<Site>();
 		String sqlReturnAllAvailableSites = "SELECT row_filter.* FROM (SELECT campground.campground_id, "
-				+ "site.site_id, site_number, max_occupancy, accessible, max_rv_length, utilities, "
+				+ "campground.name, site.site_id, site_number, max_occupancy, accessible, max_rv_length, utilities, "
 				+ "count(r.reservation_id) pop, ROW_NUMBER() OVER (PARTITION BY campground.campground_id "
 				+ "ORDER BY count(r.reservation_id) DESC, site.site_id) FROM site " 
 				+ "LEFT JOIN reservation r ON site.site_id = r.site_id " 
@@ -224,6 +224,7 @@ public class JDBCParkDAO implements ParkDAO {
 	
 	private Site mapRowToSite(SqlRowSet results) {
 		Site newSite = new Site();
+		newSite.setCampName(results.getString("name"));
 		newSite.setSiteId(results.getLong("site_id"));
 		newSite.setCampgroundId(results.getInt("campground_id"));
 		newSite.setSiteNumber(results.getInt("site_number"));

@@ -2,8 +2,10 @@ package com.techelevator;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -21,6 +23,7 @@ import com.techelevator.model.Park;
 import com.techelevator.model.ParkDAO;
 import com.techelevator.model.Reservation;
 import com.techelevator.model.ReservationDAO;
+import com.techelevator.model.ReservationSearch;
 import com.techelevator.model.Site;
 import com.techelevator.projects.view.Menu;
 
@@ -175,11 +178,66 @@ public class CampgroundCLI {
 		System.out.println("3) Return to Park page");
 		String userInput = getUserInput();
 		if(userInput.equals("1")) {
-//			runParkwideSearchCampsiteAvailability(thisPark); //TODO write method
+			runParkwideSearchCampsiteAvailability(thisPark.getParkId()); //TODO write method
 		}
 		else if(userInput.equals("2")) {
 //			runListAllUpcomingReservations();  //TODO write method 
 		} //selecting "3" should return user to last layer
+	}
+	
+	public void runParkwideSearchCampsiteAvailability(int parkId) {
+		LocalDate fromDate = (LocalDate.now());
+		LocalDate toDate = (LocalDate.now());
+		boolean inputchecker = false;
+		while (inputchecker == false) {
+			System.out.println("What is the arrival date? __/__/____");
+			String arrivalDateInput = getUserInput();
+			if (isDateValid(arrivalDateInput) == false) {
+				System.out.println("I'm sorry, but please check to insure that your date is valid");
+			}
+			else if (isDateValid(arrivalDateInput) == true) {
+				inputchecker = true;
+				fromDate = LocalDate.parse(arrivalDateInput, DateTimeFormatter.ofPattern("MM/DD/YYYY"));
+			}
+		}
+		inputchecker = false;
+		while (inputchecker == false) {
+			System.out.println("What is the departure date? __/__/____");
+			String arrivalDateInput = getUserInput();
+			if (isDateValid(arrivalDateInput) == false) {
+				System.out.println("I'm sorry, but please check to insure that your date is valid");
+			}
+			else if (isDateValid(arrivalDateInput) == true) {
+				inputchecker = true;
+				toDate = LocalDate.parse(arrivalDateInput, DateTimeFormatter.ofPattern("MM/DD/YYYY"));
+			}
+		}
+		ReservationSearch search = new ReservationSearch(fromDate, toDate);
+		search.setParkId(parkId);
+		List<Site> siteList = parkDAO.returnAllAvailableSites(search);
+		System.out.println("Results Matching Your Search Criteria");
+		int maxLength = returnMaxLengthSite(siteList);
+		System.out.println("Campground" + tabFormatterTitleParkwideSites(maxLength) + "Site No.\tMax Occup.\tAccessible\tRV Len\tUtility\tCost");
+		
+		
+	}
+	
+	public boolean isDateValid(String inputDate) {
+		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("mm-dd-uuuu", Locale.US);
+		try {
+			LocalDate.parse(inputDate, dateFormatter);
+		} catch (DateTimeParseException e) {
+			return false;
+		}
+		if (LocalDate.parse(inputDate, DateTimeFormatter.ofPattern("MM/DD/YYYY")).isBefore(LocalDate.now())) {
+			return false;
+		} 
+		if (LocalDate.parse(inputDate, DateTimeFormatter.ofPattern("MM/DD/YYYY")).isAfter(LocalDate.now().plusYears(2))){
+			return false;
+		}
+		else {
+			return true;
+		}
 	}
 	
 	public List<Site> runSearchCampsitesFromCamp(Map<String, Campground> campMap) {
@@ -285,6 +343,17 @@ public class CampgroundCLI {
 		return maxLength;
 	}
 	
+	private int returnMaxLengthSite(List<Site> siteList) {
+		int maxLength = 0;
+		for (int i = 0; i < siteList.size(); i++) {
+			if (maxLength < siteList.get(i).getCampName().length()) {
+				maxLength = siteList.get(i).getCampName().length();
+			}
+		}
+		return maxLength;
+	}
+	
+	
 	private int returnMonthTab(List<Campground> campList) {
 		int tabCount = 1;
 		for (int i = 0; i < campList.size(); i++) {
@@ -338,6 +407,44 @@ public class CampgroundCLI {
 		while (monthTab > 0) {
 			tabs = tabs + "\t";
 			monthTab --;
+		}
+		return tabs;
+	}
+	
+	private String tabFormatterTitleParkwideSites(int maxLength) {
+		
+		int tabCount = 1;
+		if (maxLength < 8) {
+			tabCount = 1;
+		} else if ((maxLength) % 8 == 0) {
+			tabCount += ((maxLength) / 8);
+		} else {
+			tabCount += ((maxLength) / 8) + 1;
+		}
+		String tabs = "";
+		while (tabCount > 0) {
+			tabs = tabs + "\t";
+			tabCount --;
+		}
+		return tabs;
+	}
+	
+	private String tabFormatterParkwideSites(int maxLength, String campName) {
+		int tabCount = 1;
+		if (maxLength < 9) {
+			tabCount = 1;
+		} else if (maxLength % 8 == 0) {
+			tabCount += (maxLength / 8);
+		} else {
+			tabCount += ((maxLength) / 8) + 1;
+		}
+		String tabs = "";
+		if (campName.length() > 8) {
+			tabCount -= (campName.length() / 8);
+		}
+		while (tabCount > 0) {
+			tabs = tabs + "\t";
+			tabCount --;
 		}
 		return tabs;
 	}
