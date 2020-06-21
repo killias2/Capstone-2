@@ -144,7 +144,7 @@ public class CampgroundCLI {
 		int monthTab = returnMonthTab(campList);
 		System.out.println(thisPark.getParkName() + " National Park Campgrounds");
 		System.out.println();
-		System.out.println("Name" + tabFormatterTitle(maxLength) + "Opens\tCloses\tDaily Fee"); //TODO make method to make this look nice
+		System.out.println("Name" + tabFormatterTitle(maxLength) + "Opens" + tabFormatterMonth(monthTab) + "Closes\tDaily Fee"); //TODO make method to make this look nice
 		System.out.println();
 		int parkId = thisPark.getParkId();
 		Map<String, Campground> campMap = makeCampgroundsUserList(campList, maxLength, monthTab); //prints list of campgrounds to user
