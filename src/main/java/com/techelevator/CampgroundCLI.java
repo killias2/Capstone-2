@@ -320,10 +320,10 @@ public class CampgroundCLI {
 			
 			resultsList = campgroundDAO.returnTopAvailableSites(campgroundSearch);
 			
-		} else if (runAdvSearchInput.equalsIgnoreCase("Y")) {
-			runAdvSearchFromCampground(fromDate, toDate);
-			
-			
+//		} else if (runAdvSearchInput.equalsIgnoreCase("Y")) {
+//			runAdvSearchFromCampground(fromDate, toDate);
+//		}	
+//			
 		}
 		return  resultsList;
 	}
@@ -412,7 +412,7 @@ public class CampgroundCLI {
 		for (Site result : results) { //TODO write method
 			siteNumber = result.getSiteNumber();
 			siteMap.put(Integer.toString(siteNumber), result);
-			System.out.println();
+			System.out.println(siteNumber + "," + result.getMaxOccupancy() + ", " + result.isAccessible() + ", " + result.getMaxRVlength() + ", " + result.isUtilities() + ", " + result.getDailyFee());  //TODO calc total cost and replace daily fee w/ it
 		}
 		return siteMap;
 	}
@@ -441,7 +441,7 @@ public class CampgroundCLI {
 	private int returnMonthTab(List<Campground> campList) {
 		int tabCount = 1;
 		for (int i = 0; i < campList.size(); i++) {
-			if (campList.get(i).getOpenFromMonth().equals("09"){
+			if (campList.get(i).getOpenFromMonth().equals("09")){
 				tabCount = 2;
 			}
 		}
