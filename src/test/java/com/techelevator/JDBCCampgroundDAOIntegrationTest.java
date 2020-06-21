@@ -30,8 +30,8 @@ public class JDBCCampgroundDAOIntegrationTest extends DAOIntegrationTest {
 		
 		Campground newCampground = createTestCampground(newPark.getParkId());
 		
-		Site newSite = createTestSite(newCampground.getCampgroundId());
-		Site newSite2 = createTestSite2(newCampground.getCampgroundId());
+		Site newSite = createTestSite(newCampground.getCampgroundId(), newCampground.getCampName(), newCampground.getDailyFee());
+		Site newSite2 = createTestSite2(newCampground.getCampgroundId(), newCampground.getCampName(), newCampground.getDailyFee());
 		
 		createTestRes(newSite2.getSiteId());
 		createTestRes2(newSite2.getSiteId());
@@ -107,8 +107,8 @@ public class JDBCCampgroundDAOIntegrationTest extends DAOIntegrationTest {
 		
 		Campground newCampground = createTestCampground(newPark.getParkId());
 		
-		Site newSite = createTestSite(newCampground.getCampgroundId());
-		Site newSite2 = createTestSite2(newCampground.getCampgroundId());
+		Site newSite = createTestSite(newCampground.getCampgroundId(), newCampground.getCampName(), newCampground.getDailyFee());
+		Site newSite2 = createTestSite2(newCampground.getCampgroundId(), newCampground.getCampName(), newCampground.getDailyFee());
 		
 		createTestRes(newSite2.getSiteId());
 		createTestRes2(newSite2.getSiteId());

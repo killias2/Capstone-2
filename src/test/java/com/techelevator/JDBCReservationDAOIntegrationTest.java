@@ -26,7 +26,7 @@ public class JDBCReservationDAOIntegrationTest extends DAOIntegrationTest {
 		
 		Campground newCampground = createTestCampground(newPark.getParkId());
 		
-		Site newSite = createTestSite(newCampground.getCampgroundId());
+		Site newSite = createTestSite(newCampground.getCampgroundId(), newCampground.getCampName(), newCampground.getDailyFee());
 		
 		Reservation newReservation = createTestRes(newSite.getSiteId());
 		

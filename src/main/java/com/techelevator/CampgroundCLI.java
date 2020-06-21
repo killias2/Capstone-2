@@ -3,6 +3,7 @@ package com.techelevator;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -76,7 +77,6 @@ public class CampgroundCLI {
 //				
 //			} 
 			else if (userInput.equalsIgnoreCase("q")) {
-				
 				System.exit(0);
 			}
 		}
@@ -86,7 +86,8 @@ public class CampgroundCLI {
 	//user input methods
 	public String getUserInput() {
 		System.out.print("Please choose an option >> ");
-		return new Scanner(System.in).nextLine();
+		String input = new Scanner(System.in).nextLine();
+		return input;
 	}
 	
 	public boolean userInputIsValid(String userInput) { //checks for all the weird things
@@ -178,14 +179,14 @@ public class CampgroundCLI {
 		System.out.println("3) Return to Park page");
 		String userInput = getUserInput();
 		if(userInput.equals("1")) {
-			runParkwideSearchCampsiteAvailability(thisPark.getParkId()); //TODO write method
+			runParkwideSearchCampsiteAvailability(thisPark); //TODO write method
 		}
 		else if(userInput.equals("2")) {
 //			runListAllUpcomingReservations();  //TODO write method 
 		} //selecting "3" should return user to last layer
 	}
 	
-	public void runParkwideSearchCampsiteAvailability(int parkId) {
+	public void runParkwideSearchCampsiteAvailability(Park thisPark) {
 		LocalDate fromDate = (LocalDate.now());
 		LocalDate toDate = (LocalDate.now());
 		boolean inputchecker = false;
@@ -197,7 +198,7 @@ public class CampgroundCLI {
 			}
 			else if (isDateValid(arrivalDateInput) == true) {
 				inputchecker = true;
-				fromDate = LocalDate.parse(arrivalDateInput, DateTimeFormatter.ofPattern("MM/DD/YYYY"));
+				fromDate = LocalDate.parse(arrivalDateInput, DateTimeFormatter.ofPattern("MM/dd/uuuu"));
 			}
 		}
 		inputchecker = false;
@@ -209,30 +210,57 @@ public class CampgroundCLI {
 			}
 			else if (isDateValid(arrivalDateInput) == true) {
 				inputchecker = true;
-				toDate = LocalDate.parse(arrivalDateInput, DateTimeFormatter.ofPattern("MM/DD/YYYY"));
+				toDate = LocalDate.parse(arrivalDateInput, DateTimeFormatter.ofPattern("MM/dd/uuuu"));
 			}
 		}
 		ReservationSearch search = new ReservationSearch(fromDate, toDate);
-		search.setParkId(parkId);
+		search.setParkId(thisPark.getParkId());
 		List<Site> siteList = parkDAO.returnAllAvailableSites(search);
-		System.out.println("Results Matching Your Search Criteria");
-		int maxLength = returnMaxLengthSite(siteList);
-		System.out.println("Campground" + tabFormatterTitleParkwideSites(maxLength) + "Site No.\tMax Occup.\tAccessible\tRV Len\tUtility\tCost");
-		
-		
+		long resLength = ChronoUnit.DAYS.between(fromDate, toDate);
+		inputchecker = false;
+		while (inputchecker == false) {			
+			System.out.println("Results Matching Your Search Criteria");
+			int maxLength = returnMaxLengthSite(siteList);
+			System.out.println("Campground" + tabFormatterTitleParkwideSites(maxLength) + "Site No.\tMax Occup.\tAccessible\tRV Len\tUtility\tCost");
+			Map<String, Site> localMap = makeParkwideResList(siteList, maxLength, resLength);
+			System.out.println("Which site should be reserved (enter 0 to cancel)?");
+			String input = getUserInput();
+			if (input.equals("0")) {
+				inputchecker = true;
+				runParkwideReservationPage(thisPark);
+			}
+			else {
+				if (localMap.containsKey(input)){
+					long siteNumber = Long.parseLong(input);
+					inputchecker = true;
+					System.out.println("What name should the reservation be made under? (80 characters max)");
+					String reservationName = getUserInput();
+					Reservation newReservation = new Reservation();
+					newReservation.setFromDate(fromDate);
+					newReservation.setToDate(toDate);
+					newReservation.setSiteId(localMap.get(input).getSiteId());
+					newReservation.setReservationName(reservationName);
+					newReservation.setCreateDate(LocalDate.now());
+					reservationDAO.addReservation(newReservation);
+					System.out.println("The reservation has been made and the confirmation id is " + newReservation.getReservationId());
+				} else {
+					System.out.println("I'm sorry, you did not select an available site, please try again.");
+				}
+			}
+		}
 	}
 	
 	public boolean isDateValid(String inputDate) {
-		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("mm-dd-uuuu", Locale.US);
+		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM/dd/uuuu", Locale.US);
 		try {
 			LocalDate.parse(inputDate, dateFormatter);
 		} catch (DateTimeParseException e) {
 			return false;
 		}
-		if (LocalDate.parse(inputDate, DateTimeFormatter.ofPattern("MM/DD/YYYY")).isBefore(LocalDate.now())) {
+		if (LocalDate.parse(inputDate, DateTimeFormatter.ofPattern("MM/dd/uuuu")).isBefore(LocalDate.now())) {
 			return false;
 		} 
-		if (LocalDate.parse(inputDate, DateTimeFormatter.ofPattern("MM/DD/YYYY")).isAfter(LocalDate.now().plusYears(2))){
+		if (LocalDate.parse(inputDate, DateTimeFormatter.ofPattern("MM/dd/uuuu")).isAfter(LocalDate.now().plusYears(2))){
 			return false;
 		}
 		else {
@@ -327,6 +355,18 @@ public class CampgroundCLI {
 		return campMap;
 	}
 	
+	public Map<String, Site> makeParkwideResList(List<Site> siteList, int maxLength, long resLength){
+		Map<String, Site> siteMap = new HashMap<>();
+		String siteName = "";
+		for (Site site : siteList) {
+			siteName = site.getCampName();
+			siteMap.put(Long.toString(site.getSiteId()), site);
+			System.out.println(siteName + tabFormatterParkwideSites(maxLength, siteName) + site.getSiteId() + "\t\t" + site.getMaxOccupancy()
+			+ "\t\t" + site.isAccessible() + "\t\t" + site.getMaxRVlength() + "\t" + site.isUtilities() + "\t" + (site.getDailyFee() * (resLength + 1)));
+		}
+		return siteMap;
+	}
+	
 	public void printSitesList(List<Site> results) {
 		for (Site result : results) { //TODO write method
 			
@@ -413,9 +453,9 @@ public class CampgroundCLI {
 	
 	private String tabFormatterTitleParkwideSites(int maxLength) {
 		
-		int tabCount = 1;
+		int tabCount = 0;
 		if (maxLength < 8) {
-			tabCount = 1;
+			tabCount = 0;
 		} else if ((maxLength) % 8 == 0) {
 			tabCount += ((maxLength) / 8);
 		} else {

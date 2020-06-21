@@ -124,7 +124,7 @@ public abstract class DAOIntegrationTest {
 		return newCampground;
 	}
 	
-	protected Site createTestSite(int campgroundId, String campName) {
+	protected Site createTestSite(int campgroundId, String campName, int DailyFee) {
 		JDBCSiteDAO siteDao = new JDBCSiteDAO(getDataSource());
 		Site newSite = new Site();
 		newSite.setCampgroundId(campgroundId);
@@ -134,11 +134,12 @@ public abstract class DAOIntegrationTest {
 		newSite.setAccessible(true);
 		newSite.setMaxRVlength(0);
 		newSite.setUtilities(false);
+		newSite.setDailyFee(DailyFee);
 		siteDao.addSite(newSite);
 		return newSite;
 	}
 	
-	protected Site createTestSite2(int campgroundId, String campName) {
+	protected Site createTestSite2(int campgroundId, String campName, int DailyFee) {
 		JDBCSiteDAO siteDao = new JDBCSiteDAO(getDataSource());
 		Site newSite = new Site();
 		newSite.setCampgroundId(campgroundId);
@@ -148,6 +149,7 @@ public abstract class DAOIntegrationTest {
 		newSite.setAccessible(false);
 		newSite.setMaxRVlength(10);
 		newSite.setUtilities(true);
+		newSite.setDailyFee(DailyFee);
 		siteDao.addSite(newSite);
 		return newSite;
 	}

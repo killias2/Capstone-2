@@ -53,7 +53,7 @@ public class JDBCParkDAO implements ParkDAO {
 			thisCampground.setCampName(results.getString("name"));
 			thisCampground.setOpenFromMonth(results.getString("open_from_mm"));
 			thisCampground.setOpenToMonth(results.getString("open_to_mm"));
-			thisCampground.setDailyFee(results.getInt("daily_fee"));
+			thisCampground.setDailyFee((int)results.getDouble(("daily_fee")));
 			campList.add(thisCampground);
 		}
 		
@@ -64,7 +64,7 @@ public class JDBCParkDAO implements ParkDAO {
 	public List<Site> returnAllAvailableSites(ReservationSearch search) {
 		List<Site> siteList = new ArrayList<Site>();
 		String sqlReturnAllAvailableSites = "SELECT row_filter.* FROM (SELECT campground.campground_id, "
-				+ "campground.name, site.site_id, site_number, max_occupancy, accessible, max_rv_length, utilities, "
+				+ "campground.name, site.site_id, site_number, max_occupancy, accessible, max_rv_length, utilities, campground.daily_fee, "
 				+ "count(r.reservation_id) pop, ROW_NUMBER() OVER (PARTITION BY campground.campground_id "
 				+ "ORDER BY count(r.reservation_id) DESC, site.site_id) FROM site " 
 				+ "LEFT JOIN reservation r ON site.site_id = r.site_id " 
@@ -114,7 +114,7 @@ public class JDBCParkDAO implements ParkDAO {
 	public List<Site> returnAllAvailableSitesAdvanced(AdvancedSearch search) {
 		List<Site> siteList = new ArrayList<Site>();
 		String sqlReturnAllAvailableSites = "SELECT row_filter.* FROM (SELECT campground.campground_id, "
-				+ "campground.name, site.site_id, site_number, max_occupancy, accessible, max_rv_length, utilities, "
+				+ "campground.name, site.site_id, site_number, max_occupancy, accessible, max_rv_length, utilities, campground.daily_fee, "
 				+ "count(r.reservation_id) pop, ROW_NUMBER() OVER (PARTITION BY campground.campground_id "
 				+ "ORDER BY count(r.reservation_id) DESC, site.site_id) FROM site " 
 				+ "LEFT JOIN reservation r ON site.site_id = r.site_id " 
@@ -232,6 +232,7 @@ public class JDBCParkDAO implements ParkDAO {
 		newSite.setAccessible(results.getBoolean("accessible"));
 		newSite.setMaxRVlength(results.getInt("max_rv_length"));
 		newSite.setUtilities(results.getBoolean("utilities"));
+		newSite.setDailyFee((int)results.getDouble(("daily_fee")));
 		return newSite;
 	}
 	
