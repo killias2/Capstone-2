@@ -73,8 +73,8 @@ public class JDBCParkDAOIntegrationTest extends DAOIntegrationTest{
 		
 		Campground newCampground = createTestCampground(newPark.getParkId());
 		
-		Site newSite = createTestSite(newCampground.getCampgroundId());
-		Site newSite2 = createTestSite2(newCampground.getCampgroundId());
+		Site newSite = createTestSite(newCampground.getCampgroundId(), newCampground.getCampName());
+		Site newSite2 = createTestSite2(newCampground.getCampgroundId(), newCampground.getCampName());
 		
 		createTestRes(newSite2.getSiteId());
 		createTestRes2(newSite2.getSiteId());
@@ -153,8 +153,8 @@ public class JDBCParkDAOIntegrationTest extends DAOIntegrationTest{
 		
 		Campground newCampground = createTestCampground(newPark.getParkId());
 		
-		Site newSite = createTestSite(newCampground.getCampgroundId());
-		Site newSite2 = createTestSite2(newCampground.getCampgroundId());
+		Site newSite = createTestSite(newCampground.getCampgroundId(), newCampground.getCampName());
+		Site newSite2 = createTestSite2(newCampground.getCampgroundId(), newCampground.getCampName());
 		
 		createTestRes(newSite2.getSiteId());
 		createTestRes2(newSite2.getSiteId());
@@ -200,6 +200,7 @@ public class JDBCParkDAOIntegrationTest extends DAOIntegrationTest{
 		siteList = dao.returnAllAvailableSitesAdvanced(search);
 		
 		Site expectedSite1 = new Site();
+		expectedSite1.setCampName("Blackwoods");
 		expectedSite1.setCampgroundId(1);
 		expectedSite1.setSiteId(178);
 		expectedSite1.setSiteNumber(178);
@@ -209,6 +210,7 @@ public class JDBCParkDAOIntegrationTest extends DAOIntegrationTest{
 		expectedSite1.setUtilities(true);
 		
 		Site expectedSite2 = new Site();
+		expectedSite1.setCampName("Seawall");
 		expectedSite2.setCampgroundId(2);
 		expectedSite2.setSiteId(392);
 		expectedSite2.setSiteNumber(116);
@@ -224,7 +226,7 @@ public class JDBCParkDAOIntegrationTest extends DAOIntegrationTest{
 	}
 	
 	@Test
-	public void return_all_res_30_Days() {
+	public void return_all_res_30_Days() { //needs changed, as current state only holds for a day
 		List<Reservation> resList = new ArrayList<>();
 		int parkId = 1;
 		resList = dao.returnAllReservationsNext30Days(parkId);

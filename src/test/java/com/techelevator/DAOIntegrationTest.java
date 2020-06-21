@@ -124,10 +124,11 @@ public abstract class DAOIntegrationTest {
 		return newCampground;
 	}
 	
-	protected Site createTestSite(int campgroundId) {
+	protected Site createTestSite(int campgroundId, String campName) {
 		JDBCSiteDAO siteDao = new JDBCSiteDAO(getDataSource());
 		Site newSite = new Site();
 		newSite.setCampgroundId(campgroundId);
+		newSite.setCampName(campName);
 		newSite.setSiteNumber(1);
 		newSite.setMaxOccupancy(10);
 		newSite.setAccessible(true);
@@ -137,10 +138,11 @@ public abstract class DAOIntegrationTest {
 		return newSite;
 	}
 	
-	protected Site createTestSite2(int campgroundId) {
+	protected Site createTestSite2(int campgroundId, String campName) {
 		JDBCSiteDAO siteDao = new JDBCSiteDAO(getDataSource());
 		Site newSite = new Site();
 		newSite.setCampgroundId(campgroundId);
+		newSite.setCampName(campName);
 		newSite.setSiteNumber(2);
 		newSite.setMaxOccupancy(6);
 		newSite.setAccessible(false);
