@@ -380,6 +380,12 @@ public class CampgroundCLI {
 	public runAdvSearchFromCampground(LocalDate arrivalDate, LocalDate departureDate) {
 		System.out.println("Number of people in your party: __");
 		
+		System.out.println("Wheelchair accessibility required (Y/N)? __");
+		
+		System.out.println("Length of RV (enter 0 if not bringing an RV) __");
+		
+		System.out.println("Utility hookup required (Y/N)? __");
+		
 		
 		AdvancedSearch campAdvSearch = new AdvancedSearch
 	}
