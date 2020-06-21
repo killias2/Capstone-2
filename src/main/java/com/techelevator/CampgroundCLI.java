@@ -154,7 +154,13 @@ public class CampgroundCLI {
 		System.out.println("2) Return to " + thisPark.getParkName() + " National Park page"); //TODO test all these going back things
 		String userInput = getUserInput();
 		if(userInput.equals("1")) {
-			runSearchCampsitesFromCamp(campMap);
+			List<Site> searchResults = runSearchCampsitesFromCamp(campMap);
+			if (searchResults.size() > 0) {
+				printSitesList(searchResults);
+				makeReservation();
+			} else {
+				System.out.println("There are no available campsites that match the dates and/or search parameters.");
+			}
 		} //selecting 2 returns user to last layer
 		
 	}
@@ -207,6 +213,10 @@ public class CampgroundCLI {
 		return  resultsList;
 	}
 	
+	public makeReservation() { //TODO: write method
+		
+	}
+	
 //	public List<Site> runParkwideSearchCampsiteAvailability(Park thisPark){
 //		
 //		
@@ -243,6 +253,12 @@ public class CampgroundCLI {
 			System.out.println("(" + counter + ") " + campName + tabFormatter2(campName, maxLength) + camp.getOpenFromMonth() + "\t" + camp.getOpenToMonth() + "\t$" + camp.getDailyFee());
 		}
 		return campMap;
+	}
+	
+	public void printSitesList(List<Site> results) {
+		for (Site result : results) {
+			
+		}
 	}
 	
 	private int returnMaxLength(List<Campground> campList) {
