@@ -371,24 +371,51 @@ public class CampgroundCLI {
 			resultsList = campgroundDAO.returnTopAvailableSites(campgroundSearch);
 			
 //		} else if (runAdvSearchInput.equalsIgnoreCase("Y")) {
-//			runAdvSearchFromCampground(fromDate, toDate);
+//			runAdvSearchFromCampground(fromDate, toDate, specificCampID);
 //		}	
 //			
 		}
 		return  resultsList;
 	}
 	
-	public runAdvSearchFromCampground(LocalDate arrivalDate, LocalDate departureDate) {
+	public List<Site> runAdvSearchFromCampground(LocalDate arrivalDate, LocalDate departureDate, int campID) {
+		List<Site> advResultsList = new ArrayList<>();
+		int maxOccupancy = 0;
+		boolean isAccessibile = false;
+		int maxRVLength = 0;
+		boolean isUtilities = false;
+		
 		System.out.println("Number of people in your party: __");
+		String peopleNumberInput = getUserInput();
+		
+			
 		
 		System.out.println("Wheelchair accessibility required (Y/N)? __");
+		String accessibilityInput = getUserInput();
+		if (accessibilityInput.contains("Y") || accessibilityInput.contains("y")) {
+			isAccessibile = true;
+		} else if (accessibilityInput.contains("N") || accessibilityInput.contains("n")) {
+			isAccessibile = false;
+		}
 		
 		System.out.println("Length of RV (enter 0 if not bringing an RV) __");
+		String rvLengthInput = getUserInput();
+		
 		
 		System.out.println("Utility hookup required (Y/N)? __");
+		String utilityInput = getUserInput();
+		if (utilityInput.contains("Y") || utilityInput.contains("y")) {
+			isUtilities = true;
+		} else if (utilityInput.contains("N") || utilityInput.contains("n")) {
+			isUtilities = false; 
+		}
 		
+		AdvancedSearch campAdvSearch = new AdvancedSearch(arrivalDate, departureDate,
+				maxOccupancy, isAccessibile, maxRVLength, isUtilities);
+		campAdvSearch.setCampgroundId(campID);
+		advResultsList = campgroundDAO.returnTopSitesRequirements(campAdvSearch);
 		
-		AdvancedSearch campAdvSearch = new AdvancedSearch
+		return advResultsList;
 	}
 	
 	public String makeReservation(List<Site> searchResults) { //TODO: write method
