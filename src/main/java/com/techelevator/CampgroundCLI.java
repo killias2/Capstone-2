@@ -228,15 +228,22 @@ public class CampgroundCLI {
 		inputchecker = false;
 		while (inputchecker == false) {
 			System.out.println("What is the departure date? __/__/____");
-			String arrivalDateInput = getUserInput();
-			if (isDateValid(arrivalDateInput) == false) {
+			String departureDateInput = getUserInput();
+			if (isDateValid(departureDateInput) == false) {
 				System.out.println("");
 				System.out.println("I'm sorry, but please check to ensure that your date is valid");
 				System.out.println("");
 			}
-			else if (isDateValid(arrivalDateInput) == true) {
-				inputchecker = true;
-				toDate = LocalDate.parse(arrivalDateInput, DateTimeFormatter.ofPattern("MM/dd/uuuu"));
+			else {
+				toDate = LocalDate.parse(departureDateInput, DateTimeFormatter.ofPattern("MM/dd/uuuu"));
+				if (toDate.isBefore(fromDate)) {
+					System.out.println("");
+					System.out.println("I'm sorry, but your departure date cannot precede your arrival date");
+					System.out.println("");
+				}
+				else if (isDateValid(departureDateInput) == true && (!toDate.isBefore(fromDate))) {
+					inputchecker = true;
+				}
 			}
 		}
 		ReservationSearch search = new ReservationSearch(fromDate, toDate);
@@ -354,8 +361,19 @@ public class CampgroundCLI {
 			System.out.println("What is the departure date? __/__/____");
 			String departureDateInput = getUserInput();
 			if (isDateValid(departureDateInput) == false) {
-				System.out.println("I'm sorry, but please check to ensure that your date is valid");
+			System.out.println("I'm sorry, but please check to ensure that your date is valid");
 			}
+//			else {
+//				toDate = LocalDate.parse(departureDateInput, DateTimeFormatter.ofPattern("MM/dd/uuuu"));
+//				if (toDate.isBefore(fromDate)) {
+//					System.out.println("");
+//					System.out.println("I'm sorry, but your departure date cannot precede your arrival date");
+//					System.out.println("");
+//				}
+//				else if (isDateValid(departureDateInput) == true && (!toDate.isBefore(fromDate))) {
+//					inputchecker = true;
+//				}
+//			}
 			else if (isDateValid(departureDateInput) == true) {
 				inputchecker = true;
 				toDate = LocalDate.parse(departureDateInput, DateTimeFormatter.ofPattern("MM/dd/uuuu"));
@@ -471,7 +489,7 @@ public class CampgroundCLI {
 			campName = camp.getCampName();
 			counter += 1;
 			campMap.put(Integer.toString(counter), camp);
-			System.out.println("(" + counter + ") " + campName + tabFormatter2(campName, maxLength) + mapMMToMonth(camp.getOpenFromMonth()) + tabFormatterMonth(monthTab) + mapMMToMonth(camp.getOpenToMonth()) + "\t$" + camp.getDailyFee());
+			System.out.println("(" + counter + ") " + campName + tabFormatter2(campName, maxLength) + mapMMToMonth(camp.getOpenFromMonth()) + tabFormatterMonth(monthTab) + mapMMToMonth(camp.getOpenToMonth()) + "\t$" + camp.getDailyFee() + ".00");
 		}
 		return campMap;
 	}
@@ -483,7 +501,7 @@ public class CampgroundCLI {
 			siteName = site.getCampName();
 			siteMap.put(Long.toString(site.getSiteId()), site);
 			System.out.println(siteName + tabFormatterParkwideSites(maxLength, siteName) + site.getSiteId() + "\t" + + site.getSiteNumber() + "\t\t" + site.getMaxOccupancy()
-			+ "\t\t" + site.isAccessible() + "\t\t" + site.getMaxRVlength() + "\t" + site.isUtilities() + "\t" + (site.getDailyFee() * (resLength + 1)));
+			+ "\t\t" + site.isAccessible() + "\t\t" + site.getMaxRVlength() + "\t" + site.isUtilities() + "\t$" + (site.getDailyFee() * (resLength + 1)) + ".00");
 		}
 		return siteMap;
 	}
