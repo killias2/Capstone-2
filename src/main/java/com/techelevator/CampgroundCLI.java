@@ -246,9 +246,143 @@ public class CampgroundCLI {
 				}
 			}
 		}
+		inputchecker = false;
+		while (inputchecker == false) {
+			System.out.println("");
+			System.out.println("Would you like to enter additiona search parameters? Y/N");
+			System.out.println("");
+			String ynInput = getUserInput();
+			if (ynInput.toUpperCase().equals("N")) {
+				inputchecker = true;
+				System.out.println("Running your search....");
+				runParkwideSearchCampsiteAvailabilityBasic(thisPark, fromDate, toDate);
+			}
+			else if (ynInput.toUpperCase().equals("Y")) {
+				inputchecker = true;
+				runParkwideSearchCampsiteAvailabilityAdvanced(thisPark, fromDate, toDate);
+			} else {
+				System.out.println("Please choose Y or N, thank you!");
+			}
+		}
+	}
+	
+	public void runParkwideSearchCampsiteAvailabilityBasic(Park thisPark, LocalDate fromDate, LocalDate toDate) {
 		ReservationSearch search = new ReservationSearch(fromDate, toDate);
 		search.setParkId(thisPark.getParkId());
 		List<Site> siteList = parkDAO.returnAllAvailableSites(search);
+		long resLength = ChronoUnit.DAYS.between(fromDate, toDate);
+		boolean inputchecker = false;
+		if (siteList.isEmpty()) {
+			System.out.println("");
+			System.out.println("No Results Match Your Search Criteria");
+			System.out.println("Please Try Another Search");
+			System.out.println("");
+			runParkwideSearchCampsiteAvailability(thisPark);
+		}
+		while (inputchecker == false) {			
+			System.out.println("Results Matching Your Search Criteria");
+			int maxLength = returnMaxLengthSite(siteList);
+			System.out.println("Campground" + tabFormatterTitleParkwideSites(maxLength) + "Site ID\tSite No.\tMax Occup.\tAccessible\tRV Len\tUtility\tCost");
+			Map<String, Site> localMap = makeParkwideResList(siteList, maxLength, resLength);
+			System.out.println("Which site (Enter Site ID) should be reserved (enter 0 to cancel)?");
+			String input = getUserInput();
+			if (input.equals("0")) {
+				inputchecker = true;
+				runParkwideReservationPage(thisPark);
+			}
+			else {
+				if (localMap.containsKey(input)){
+					inputchecker = true;
+					System.out.println("What name should the reservation be made under? (80 characters max)");
+					String reservationName = getUserInput();
+					Reservation newReservation = new Reservation();
+					newReservation.setFromDate(fromDate);
+					newReservation.setToDate(toDate);
+					newReservation.setSiteId(localMap.get(input).getSiteId());
+					newReservation.setReservationName(reservationName);
+					newReservation.setCreateDate(LocalDate.now());
+					reservationDAO.addReservation(newReservation);				
+					inputchecker = true;
+					runParkwideReservationPage(thisPark);
+					System.out.println("The reservation has been made and the confirmation id is " + newReservation.getReservationId());
+					
+				} else {
+					System.out.println("");
+					System.out.println("I'm sorry, you did not select an available site, please try again.");
+					System.out.println("");
+				}
+			}
+		}
+	}
+	
+	public void runParkwideSearchCampsiteAvailabilityAdvanced(Park thisPark, LocalDate fromDate, LocalDate toDate) {
+		boolean inputchecker = false;
+		int searchMaxOccupancy = 0;
+		boolean isAccessible = false;
+		int searchMaxRVLength = 0;
+		boolean isUtilities = false;
+		while (inputchecker == false) {		
+			System.out.println("Number of people in your party: __");
+			String input = getUserInput();
+			try {
+				if (Integer.parseInt(input) < 0) {
+					System.out.println("This is not a valid choice, please try again.");
+				}
+				else {
+					inputchecker = true;
+					searchMaxOccupancy = Integer.parseInt(input);
+				}
+			} catch(NumberFormatException e) {
+				System.out.println("This is not a valid choice, please try again.");
+			}
+		}
+		inputchecker = false;
+		while (inputchecker == false) {		
+			System.out.println("Wheelchair accessibility required (Y/N)? __");
+			String input = getUserInput();
+			if (input.toUpperCase().equals("Y")) {
+				inputchecker = true;
+				isAccessible = true;
+			} else if (input.toUpperCase().equals("N")){
+				inputchecker = true;
+				isAccessible = false;
+			} else {
+				System.out.println("Please choose Y or N, thank you!");
+			}
+		}
+		inputchecker = false;
+		while (inputchecker == false) {
+			System.out.println("Length of RV (enter 0 if not bringing an RV): __");
+			String input = getUserInput();
+			try {
+				if (Integer.parseInt(input) < 0) {
+					System.out.println("This is not a valid choice, please try again.");
+				}
+				else {
+					inputchecker = true;
+					searchMaxRVLength = Integer.parseInt(input);
+				}
+			} catch(NumberFormatException e) {
+				System.out.println("This is not a valid choice, please try again.");
+			}
+		}
+		inputchecker = false;
+		while (inputchecker == false) {		
+			System.out.println("Utility hookup required (Y/N)? __");
+			String input = getUserInput();
+			if (input.toUpperCase().equals("Y")) {
+				inputchecker = true;
+				isUtilities = true;
+			} else if (input.toUpperCase().equals("N")){
+				inputchecker = true;
+				isUtilities = false;
+			} else {
+				System.out.println("Please choose Y or N, thank you!");
+			}
+		}
+		AdvancedSearch search = new AdvancedSearch(fromDate, toDate, searchMaxOccupancy, isAccessible, searchMaxRVLength, isUtilities);
+		search.setParkId(thisPark.getParkId());
+		List<Site> siteList = parkDAO.returnAllAvailableSitesAdvanced(search);
 		long resLength = ChronoUnit.DAYS.between(fromDate, toDate);
 		inputchecker = false;
 		if (siteList.isEmpty()) {
@@ -293,7 +427,7 @@ public class CampgroundCLI {
 			}
 		}
 	}
-	
+		
 	private void runListAllUpcomingReservations(Park thisPark) {
 		List<Reservation> resList = parkDAO.returnAllReservationsNext30Days(thisPark.getParkId());
 		if (resList.isEmpty()) {
