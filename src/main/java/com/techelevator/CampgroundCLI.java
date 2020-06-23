@@ -437,11 +437,11 @@ public class CampgroundCLI {
 			runParkwideReservationPage(thisPark);
 		}
 		System.out.println("Here is a list of all reservations at " + thisPark.getParkName());
-		System.out.println("Campground\tSite\tFrom Date\tTo Date\t\tCreate Date\tReservation Name");
+		System.out.println("Campground\tSite No.\tFrom Date\tTo Date\t\tCreate Date\tReservation Name");
 		int maxLength = returnMaxLengthRes(resList);
 		for (int i = 0; i < resList.size(); i++) {
 			Reservation thisRes = resList.get(i);
-			System.out.println(thisRes.getCampName() + tabFormatterParkwideSites(maxLength, thisRes.getCampName()) + thisRes.getSiteNumber() + "\t" + 
+			System.out.println(thisRes.getCampName() + tabFormatterParkwideSites(maxLength, thisRes.getCampName()) + thisRes.getSiteNumber() + "\t\t" + 
 			thisRes.getFromDate() + "\t" + thisRes.getToDate() + "\t" + thisRes.getCreateDate() + "\t" 
 			+ thisRes.getReservationName());
 		}
