@@ -35,7 +35,6 @@ public class CampgroundCLI {
 	private Menu menu;
 	private ParkDAO parkDAO;
 	private CampgroundDAO campgroundDAO;
-//	private SiteDAO siteDAO;
 	private ReservationDAO reservationDAO;
 
 	
@@ -55,7 +54,6 @@ public class CampgroundCLI {
 		//his.menu = new Menu();
 		parkDAO = new JDBCParkDAO(datasource);
 		campgroundDAO = new JDBCCampgroundDAO(datasource);
-//		siteDAO = new JDBCSiteDAO(datasource);
 		reservationDAO = new JDBCReservationDAO(datasource);
 		
 		
@@ -64,22 +62,21 @@ public class CampgroundCLI {
 	public void run() {
 		//call method to display application banner
 		while (true) {
-//			runAllParksPage();
 			System.out.println("Select a Park for details");
 			System.out.println();
 			Map<String, Park> parkmap = makeParkNamesOptionsList(); //helper method prints all other options
 			System.out.println("Q) quit");
 			System.out.println();
 			String userInput = getUserInput();
-			if (parkmap.containsKey(userInput) ) {  //&& userInputIsValid(userInput)
+			if (parkmap.containsKey(userInput) ) {
 				Park specificPark = parkmap.get(userInput);
 				runSpecificParkPage(specificPark);
 			}
-//			if (userInput.contains(s)) {
-//				
-//			} 
 			else if (userInput.equalsIgnoreCase("q")) {
 				System.exit(0);
+			} 
+			else {
+				System.out.println("Please choose from the available options");
 			}
 		}
 		
@@ -91,14 +88,6 @@ public class CampgroundCLI {
 		String input = new Scanner(System.in).nextLine();
 		return input;
 	}
-	
-//	public boolean userInputIsValid(String userInput) { //checks for all the weird things
-//		if() {
-//			return true;
-//		} 
-//		System.out.println("Invalid selection");
-//		return false;
-//	}
 	
 	
 	//subpage methods
@@ -141,7 +130,7 @@ public class CampgroundCLI {
 		else if(userInput.equals("2")) {
 			runParkwideReservationPage(thisPark);
 		} else if (userInput.equals("3")) {
-			//runAllParksPage(); //TO-DO
+			run();
 		} else {
 			System.out.println("");
 			System.out.println("This is not a valid menu option");
@@ -168,18 +157,28 @@ public class CampgroundCLI {
 		System.out.println("1) Search for reservation date availability");
 		System.out.println("2) Return to " + thisPark.getParkName() + " National Park page"); //TODO test all these going back things
 		String userInput = getUserInput();
-		if(userInput.equals("1")) {
-			List<Site> searchResults = runSearchCampsitesFromCamp(campMap);
-			if (searchResults.size() > 0) {
-				System.out.println("Results:");
-				System.out.println();
-				System.out.println("Site No., Max Occup., Acc?, Max RV Length, Utility, Cost"); //TODO clean up display
-				Map <String, Site> campSitesList = makeCampSitesList(searchResults);  
-				makeReservation(campSitesList);
-			} else {
-				System.out.println("There are no available campsites that match the dates and/or search parameters.");
+		boolean inputchecker = false;
+		while (inputchecker = false) {
+			if(userInput.equals("1")) {
+				List<Site> searchResults = runSearchCampsitesFromCamp(campMap, thisPark);
+				if (searchResults.size() > 0) {
+					System.out.println("Results:");
+					System.out.println();
+					System.out.println("Site No., Max Occup., Acc?, Max RV Length, Utility, Cost"); //TODO clean up display
+					Map <String, Site> campSitesList = makeCampSitesList(searchResults);  
+					makeReservation(campSitesList);
+				} else {
+					System.out.println("There are no available campsites that match the dates and/or search parameters.");
+				}
 			}
-		} //selecting 2 returns user to last layer
+			else if(userInput.equals("2")) {
+				inputchecker = true;
+				runSpecificParkPage(thisPark);
+			}
+			else {
+				System.out.println("Please check the available options and try again");
+			}
+		}
 		
 	}
 	
