@@ -166,7 +166,7 @@ public class CampgroundCLI {
 			String userInput = getUserInput();
 			if(userInput.equals("1")) {
 				inputchecker = true;
-				runSearchCampsitesFromCamp(campMap, thisPark);
+				runSearchCampsitesFromCamp(campMap, thisPark, maxLength);
 //				List<Site> searchResults = runSearchCampsitesFromCamp(campMap, thisPark);
 //				if (searchResults.size() > 0) {
 //					System.out.println("Results:");
@@ -456,19 +456,26 @@ public class CampgroundCLI {
 		runParkwideReservationPage(thisPark);
 	}
 	
-	public List<Site> runSearchCampsitesFromCamp(Map<String, Campground> campMap, Park thisPark) {
+	public List<Site> runSearchCampsitesFromCamp(Map<String, Campground> campMap, Park thisPark, int maxLength) {
 		List<Site> resultsList = new ArrayList<>();
 		System.out.println("Which campground? (Enter * to cancel search ___");
 		String userCampground = getUserInput();
 		int specificCampID = 0;
+		Campground specificCamp = new Campground();
+		boolean inputchecker = false;
+		while (inputchecker == false)
 		if (campMap.containsKey(userCampground)) {
-			Campground specificCamp = campMap.get(userCampground); //map contains park id
+			specificCamp = campMap.get(userCampground); //map contains park id
 			specificCampID = specificCamp.getCampgroundId();
+			inputchecker = true;
+		}
+		else {
+			System.out.println("Please choose from the available campgrounds");
 		}
 		
 		LocalDate fromDate = (LocalDate.now());
 		LocalDate toDate = (LocalDate.now());
-		boolean inputchecker = false;
+		inputchecker = false;
 		while (inputchecker == false) {
 			System.out.println("What is the arrival date? __/__/____");
 			String arrivalDateInput = getUserInput();
@@ -505,11 +512,11 @@ public class CampgroundCLI {
 		while (inputchecker == false) {
 			if (runAdvSearchInput.equalsIgnoreCase("N")) {
 				System.out.println("Running your search....");
-				runSearchFromCampground(fromDate, toDate, specificCampID, campMap, thisPark);
+				runSearchFromCampground(fromDate, toDate, specificCamp, campMap, thisPark, maxLength);
 			}
 			else if (runAdvSearchInput.toUpperCase().equals("Y")) {
 				inputchecker = true;
-				runAdvSearchFromCampground(fromDate, toDate, specificCampID, campMap, thisPark);
+				runAdvSearchFromCampground(fromDate, toDate, specificCamp, campMap, thisPark, maxLength);
 			} else {
 				System.out.println("Please choose Y or N, thank you!");
 			}
@@ -517,9 +524,9 @@ public class CampgroundCLI {
 		return  resultsList;
 	}
 	
-	public void runSearchFromCampground(LocalDate fromDate, LocalDate toDate, int campgroundId, Map<String, Campground> campMap, Park thisPark) {
+	public void runSearchFromCampground(LocalDate fromDate, LocalDate toDate, Campground specificCamp, Map<String, Campground> campMap, Park thisPark, int maxLength) {
 		CampgroundSearch search = new CampgroundSearch(fromDate, toDate);
-		search.setCampgroundId(campgroundId);
+		search.setCampgroundId(specificCamp.getCampgroundId());
 		List<Site> siteList = campgroundDAO.returnTopAvailableSites(search);
 		long resLength = ChronoUnit.DAYS.between(fromDate, toDate);
 		boolean inputchecker = false;
@@ -528,18 +535,17 @@ public class CampgroundCLI {
 			System.out.println("No Results Match Your Search Criteria");
 			System.out.println("Please Try Another Search");
 			System.out.println("");
-			runSearchCampsitesFromCamp(campMap, thisPark);
+			runSearchCampsitesFromCamp(campMap, thisPark, maxLength);
 		}
 		while (inputchecker == false) {			
 			System.out.println("Results Matching Your Search Criteria");
-			int maxLength = returnMaxLengthSite(siteList);
 			System.out.println("Campground" + tabFormatterTitleParkwideSites(maxLength) + "Site ID\tSite No.\tMax Occup.\tAccessible\tRV Len\tUtility\tCost");
 			Map<String, Site> localMap = makeParkwideResList(siteList, maxLength, resLength);
 			System.out.println("Which site (Enter Site ID) should be reserved (enter 0 to cancel)?");
 			String input = getUserInput();
 			if (input.equals("0")) {
 				inputchecker = true;
-				runSearchCampsitesFromCamp(campMap, thisPark);
+				runSearchCampsitesFromCamp(campMap, thisPark, maxLength);
 			}
 			else {
 				if (localMap.containsKey(input)){
@@ -555,7 +561,7 @@ public class CampgroundCLI {
 					reservationDAO.addReservation(newReservation);				
 					inputchecker = true;
 					System.out.println("The reservation has been made and the confirmation id is " + newReservation.getReservationId());
-					runSearchCampsitesFromCamp(campMap, thisPark);
+					runSearchCampsitesFromCamp(campMap, thisPark, maxLength);
 				} else {
 					System.out.println("");
 					System.out.println("I'm sorry, you did not select an available site, please try again.");
@@ -565,7 +571,7 @@ public class CampgroundCLI {
 		}
 	}
 	
-	public List<Site> runAdvSearchFromCampground(LocalDate arrivalDate, LocalDate departureDate, int campID, Map<String, Campground> campMap, Park thisPark) {
+	public List<Site> runAdvSearchFromCampground(LocalDate arrivalDate, LocalDate departureDate, Campground specificCamp, Map<String, Campground> campMap, Park thisPark, int maxLength) {
 		List<Site> advResultsList = new ArrayList<>();
 		boolean inputchecker = false;
 		int searchMaxOccupancy = 0;
@@ -635,7 +641,7 @@ public class CampgroundCLI {
 		AdvancedSearch campAdvSearch = new AdvancedSearch(arrivalDate, departureDate, searchMaxOccupancy, isAccessible, searchMaxRVLength, isUtilities);
 //		search.setParkId(thisPark.getParkId());
 //		List<Site> siteList = parkDAO.returnAllAvailableSitesAdvanced(search);
-		campAdvSearch.setCampgroundId(campID);
+		campAdvSearch.setCampgroundId(specificCamp.getCampgroundId());
 		advResultsList = campgroundDAO.returnTopSitesRequirements(campAdvSearch);
 		
 		long resLength = ChronoUnit.DAYS.between(arrivalDate, departureDate);
@@ -645,11 +651,10 @@ public class CampgroundCLI {
 			System.out.println("No Results Match Your Search Criteria");
 			System.out.println("Please Try Another Search");
 			System.out.println("");
-			runSearchCampsitesFromCamp(campMap, thisPark);
+			runSearchCampsitesFromCamp(campMap, thisPark, maxLength);
 		}
 		while (inputchecker == false) {			
 			System.out.println("Results Matching Your Search Criteria");
-			int maxLength = returnMaxLengthSite(advResultsList);
 			System.out.println("Campground" + tabFormatterTitleParkwideSites(maxLength) + "Site ID\tSite No.\tMax Occup.\tAccessible\tRV Len\tUtility\tCost");
 			Map<String, Site> localMap = makeParkwideResList(advResultsList, maxLength, resLength);
 			System.out.println("Which site (Enter Site ID) should be reserved (enter 0 to cancel)?");
