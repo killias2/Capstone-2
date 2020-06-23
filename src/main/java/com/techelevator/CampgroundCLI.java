@@ -249,7 +249,7 @@ public class CampgroundCLI {
 		inputchecker = false;
 		while (inputchecker == false) {
 			System.out.println("");
-			System.out.println("Would you like to enter additiona search parameters? Y/N");
+			System.out.println("Would you like to enter additional search parameters? Y/N");
 			System.out.println("");
 			String ynInput = getUserInput();
 			if (ynInput.toUpperCase().equals("N")) {
@@ -466,7 +466,7 @@ public class CampgroundCLI {
 		}
 	}
 	
-	public List<Site> runSearchCampsitesFromCamp(Map<String, Campground> campMap) {
+	public List<Site> runSearchCampsitesFromCamp(Map<String, Campground> campMap, Park thisPark) {
 		List<Site> resultsList = new ArrayList<>();
 		System.out.println("Which campground? (Enter * to cancel search ___");
 		String userCampground = getUserInput();
@@ -524,14 +524,14 @@ public class CampgroundCLI {
 			
 		} else if (runAdvSearchInput.equalsIgnoreCase("Y")) {
 //			runAdvSearchFromCampground(fromDate, toDate, specificCampID);
-			resultsList = runAdvSearchFromCampground(fromDate, toDate, specificCampID);
+			resultsList = runAdvSearchFromCampground(fromDate, toDate, specificCampID, campMap, thisPark);
 		}	
 			
 //		}
 		return  resultsList;
 	}
 	
-	public List<Site> runAdvSearchFromCampground(LocalDate arrivalDate, LocalDate departureDate, int campID) {
+	public List<Site> runAdvSearchFromCampground(LocalDate arrivalDate, LocalDate departureDate, int campID, Map<String, Campground> campMap, Park thisPark) {
 		List<Site> advResultsList = new ArrayList<>();
 		boolean inputchecker = false;
 		int searchMaxOccupancy = 0;
@@ -611,7 +611,7 @@ public class CampgroundCLI {
 			System.out.println("No Results Match Your Search Criteria");
 			System.out.println("Please Try Another Search");
 			System.out.println("");
-			runParkwideSearchCampsiteAvailability(thisPark);
+			runSearchCampsitesFromCamp(campMap, thisPark);
 		}
 		while (inputchecker == false) {			
 			System.out.println("Results Matching Your Search Criteria");
@@ -622,7 +622,7 @@ public class CampgroundCLI {
 			String input = getUserInput();
 			if (input.equals("0")) {
 				inputchecker = true;
-				runParkwideReservationPage(thisPark);
+				runCampgroundsPage(thisPark);//TODO
 			}
 			else {
 				if (localMap.containsKey(input)){
@@ -630,14 +630,14 @@ public class CampgroundCLI {
 					System.out.println("What name should the reservation be made under? (80 characters max)");
 					String reservationName = getUserInput();
 					Reservation newReservation = new Reservation();
-					newReservation.setFromDate(fromDate);
-					newReservation.setToDate(toDate);
+					newReservation.setFromDate(arrivalDate);
+					newReservation.setToDate(departureDate);
 					newReservation.setSiteId(localMap.get(input).getSiteId());
 					newReservation.setReservationName(reservationName);
 					newReservation.setCreateDate(LocalDate.now());
 					reservationDAO.addReservation(newReservation);				
 					inputchecker = true;
-					runParkwideReservationPage(thisPark);
+					runCampgroundsPage(thisPark);
 					System.out.println("The reservation has been made and the confirmation id is " + newReservation.getReservationId());
 					
 				} else {
@@ -652,26 +652,26 @@ public class CampgroundCLI {
 		return advResultsList;
 	}
 	
-	public String makeReservation(Map<String, Site> searchResults) { //TODO: write method
-		boolean isReserving = true;
-		Reservation newReservation = new Reservation();
-		while (isReserving) {
-			System.out.println("Which site would you like to reserve (enter 0 to cancel)?  __");
-			String siteNumberInput = getUserInput();
-			if(siteNumberInput.equals("0")) {
-//				isReserving = false;
-				return "Reservation Canceled";
-			} else if (searchResults.containsKey(siteNumberInput)) {  //might need to 
-				
-			} 
-			System.out.println("Enter your name __");
-			String nameInput = getUserInput();
-			
-			
-		}
-		
-		return "";
-	}
+//	public String makeReservation(Map<String, Site> searchResults) { //TODO: write method
+//		boolean isReserving = true;
+//		Reservation newReservation = new Reservation();
+//		while (isReserving) {
+//			System.out.println("Which site would you like to reserve (enter 0 to cancel)?  __");
+//			String siteNumberInput = getUserInput();
+//			if(siteNumberInput.equals("0")) {
+////				isReserving = false;
+//				return "Reservation Canceled";
+//			} else if (searchResults.containsKey(siteNumberInput)) {  //might need to 
+//				
+//			} 
+//			System.out.println("Enter your name __");
+//			String nameInput = getUserInput();
+//			
+//			
+//		}
+//		
+//		return "";
+//	}
 	
 //	public List<Site> runParkwideSearchCampsiteAvailability(Park thisPark){
 //		
