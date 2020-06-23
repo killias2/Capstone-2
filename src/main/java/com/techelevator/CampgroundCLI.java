@@ -456,6 +456,7 @@ public class CampgroundCLI {
 		runParkwideReservationPage(thisPark);
 	}
 	
+	//v Layer E
 	public List<Site> runSearchCampsitesFromCamp(Map<String, Campground> campMap, Park thisPark, int maxLength) {
 		List<Site> resultsList = new ArrayList<>();
 		System.out.println("Which campground? (Enter * to cancel search ___");
@@ -540,7 +541,7 @@ public class CampgroundCLI {
 		while (inputchecker == false) {			
 			System.out.println("Results Matching Your Search Criteria");
 			System.out.println("Campground" + tabFormatterTitleParkwideSites(maxLength) + "Site ID\tSite No.\tMax Occup.\tAccessible\tRV Len\tUtility\tCost");
-			Map<String, Site> localMap = makeParkwideResList(siteList, maxLength, resLength);
+			Map<String, Site> localMap = makeCampSitesList(siteList);
 			System.out.println("Which site (Enter Site ID) should be reserved (enter 0 to cancel)?");
 			String input = getUserInput();
 			if (input.equals("0")) {
@@ -656,7 +657,7 @@ public class CampgroundCLI {
 		while (inputchecker == false) {			
 			System.out.println("Results Matching Your Search Criteria");
 			System.out.println("Campground" + tabFormatterTitleParkwideSites(maxLength) + "Site ID\tSite No.\tMax Occup.\tAccessible\tRV Len\tUtility\tCost");
-			Map<String, Site> localMap = makeParkwideResList(advResultsList, maxLength, resLength);
+			Map<String, Site> localMap = makeCampSitesList(advResultsList);
 			System.out.println("Which site (Enter Site ID) should be reserved (enter 0 to cancel)?");
 			String input = getUserInput();
 			if (input.equals("0")) {
@@ -676,9 +677,9 @@ public class CampgroundCLI {
 					newReservation.setCreateDate(LocalDate.now());
 					reservationDAO.addReservation(newReservation);				
 					inputchecker = true;
-					runCampgroundsPage(thisPark);
+//					runCampgroundsPage(thisPark);
 					System.out.println("The reservation has been made and the confirmation id is " + newReservation.getReservationId());
-					
+					runSearchCampsitesFromCamp(campMap, thisPark, maxLength);
 				} else {
 					System.out.println("");
 					System.out.println("I'm sorry, you did not select an available site, please try again.");
