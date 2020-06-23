@@ -118,7 +118,7 @@ public abstract class DAOIntegrationTest {
 		newCampground.setParkId(parkId);
 		newCampground.setCampName("ZZZZYYYYY Bobby Tables Campground");
 		newCampground.setOpenFromMonth("01");
-		newCampground.setOpenToMonth("11");
+		newCampground.setOpenToMonth("12");
 		newCampground.setDailyFee(100);
 		campgroundDAO.addCampground(newCampground);
 		return newCampground;
@@ -180,6 +180,57 @@ public abstract class DAOIntegrationTest {
 		newReservation.setFromDate(fromDate);
 		newReservation.setToDate(toDate);
 		newReservation.setCreateDate(createDate);
+		dao.addReservation(newReservation);
+		return newReservation;
+	}
+	
+	protected Reservation createTestRes1Return30(long siteId, String campName, int siteNumber) {
+		JDBCReservationDAO dao = new JDBCReservationDAO(getDataSource());
+		Reservation newReservation = new Reservation();
+		newReservation.setReservationName("ZXXYYY Family");
+		newReservation.setSiteId(siteId);
+		LocalDate fromDate = LocalDate.now().plusDays(8);
+		LocalDate toDate = LocalDate.now().plusDays(9);
+		LocalDate createDate = LocalDate.now();
+		newReservation.setFromDate(fromDate);
+		newReservation.setToDate(toDate);
+		newReservation.setCreateDate(createDate);
+		newReservation.setCampName(campName);
+		newReservation.setSiteNumber(siteNumber);
+		dao.addReservation(newReservation);
+		return newReservation;
+	}
+	
+	protected Reservation createTestRes2Return30(long siteId, String campName, int siteNumber) {
+		JDBCReservationDAO dao = new JDBCReservationDAO(getDataSource());
+		Reservation newReservation = new Reservation();
+		newReservation.setReservationName("YYYZZZXXX Family");
+		newReservation.setSiteId(siteId);
+		LocalDate fromDate = LocalDate.now().plusDays(11);
+		LocalDate toDate = LocalDate.now().plusDays(15);
+		LocalDate createDate = LocalDate.now();
+		newReservation.setFromDate(fromDate);
+		newReservation.setToDate(toDate);
+		newReservation.setCreateDate(createDate);
+		newReservation.setCampName(campName);
+		newReservation.setSiteNumber(siteNumber);
+		dao.addReservation(newReservation);
+		return newReservation;
+	}
+	
+	protected Reservation createTestRes3Return30(long siteId, String campName, int siteNumber) {
+		JDBCReservationDAO dao = new JDBCReservationDAO(getDataSource());
+		Reservation newReservation = new Reservation();
+		newReservation.setReservationName("BlahBlah Family");
+		newReservation.setSiteId(siteId);
+		LocalDate fromDate = LocalDate.now().plusDays(5);
+		LocalDate toDate = LocalDate.now().plusDays(7);
+		LocalDate createDate = LocalDate.now();
+		newReservation.setFromDate(fromDate);
+		newReservation.setToDate(toDate);
+		newReservation.setCreateDate(createDate);
+		newReservation.setCampName(campName);
+		newReservation.setSiteNumber(siteNumber);
 		dao.addReservation(newReservation);
 		return newReservation;
 	}

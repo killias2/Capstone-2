@@ -237,32 +237,22 @@ public class JDBCParkDAOIntegrationTest extends DAOIntegrationTest{
 	}
 	
 	@Test
-	public void return_all_res_30_Days() { //needs changed, as current state only holds for a day
+	public void return_all_res_30_Days() {
+		Park newPark = createTestPark();
+		
+		Campground newCampground = createTestCampground(newPark.getParkId());
+		
+		Site newSite = createTestSite(newCampground.getCampgroundId(), newCampground.getCampName(), newCampground.getDailyFee());
+		Site newSite2 = createTestSite2(newCampground.getCampgroundId(), newCampground.getCampName(), newCampground.getDailyFee());
+	
+		createTestRes1Return30(newSite.getSiteId(), newCampground.getCampName(), newSite.getSiteNumber());
+		createTestRes2Return30(newSite2.getSiteId(), newCampground.getCampName(), newSite2.getSiteNumber());
+		createTestRes3Return30(newSite2.getSiteId(), newCampground.getCampName(), newSite2.getSiteNumber());
+		
 		List<Reservation> resList = new ArrayList<>();
-		int parkId = 1;
-		resList = dao.returnAllReservationsNext30Days(parkId);
+		resList = dao.returnAllReservationsNext30Days(newPark.getParkId());
+		Assert.assertTrue(resList.size() ==3 );
 		
-		Reservation expectedRes1 = new Reservation();
-		expectedRes1.setReservationId(37);
-		expectedRes1.setSiteNumber(45);
-		expectedRes1.setCampName("Blackwoods");
-		expectedRes1.setReservationName("Bill Board");
-		expectedRes1.setFromDate(LocalDate.of(2020, 06, 12));
-		expectedRes1.setToDate(LocalDate.of(2020, 06, 22));
-		expectedRes1.setCreateDate(LocalDate.of(2020, 06, 21));
-		
-		Reservation expectedRes2 = new Reservation();
-		expectedRes2.setReservationId(3);
-		expectedRes2.setSiteNumber(2);
-		expectedRes2.setCampName("Blackwoods");
-		expectedRes2.setReservationName("Jones Reservation");
-		expectedRes2.setFromDate(LocalDate.of(2020, 06, 19));
-		expectedRes2.setToDate(LocalDate.of(2020, 06, 23));
-		expectedRes2.setCreateDate(LocalDate.of(2020, 06, 21));
-		
-		Assert.assertTrue(resList.size() >= 1);
-		assertReservationsAreEqual(expectedRes1, resList.get(0));
-		assertReservationsAreEqual(expectedRes2, resList.get(5));
 	}
 	
 	

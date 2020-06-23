@@ -182,7 +182,7 @@ public class JDBCParkDAO implements ParkDAO {
 				"JOIN site s ON r.site_id = s.site_id\n" + 
 				"JOIN campground ON s.campground_id = campground.campground_id\n" + 
 				"WHERE\n" + 
-				"campground.campground_id = ?\n" + 
+				"campground.park_id = ?\n" + 
 				"AND\n" + 
 				"(\n" + 
 				"from_date BETWEEN (CURRENT_DATE) AND (CURRENT_DATE + INTERVAL '30 day')\n" + 
