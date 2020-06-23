@@ -32,7 +32,6 @@ import com.techelevator.projects.view.Menu;
 
 public class CampgroundCLI {
 	
-	private Menu menu;
 	private ParkDAO parkDAO;
 	private CampgroundDAO campgroundDAO;
 	private ReservationDAO reservationDAO;
@@ -124,19 +123,25 @@ public class CampgroundCLI {
 		System.out.println("2) View Parkwide Reservation Information");
 		System.out.println("3) Return to All Parks");
 		String userInput = getUserInput();
-		if(userInput.equals("1")) {
-			runCampgroundsPage(thisPark);
-		}
-		else if(userInput.equals("2")) {
-			runParkwideReservationPage(thisPark);
-		} else if (userInput.equals("3")) {
-			run();
-		} else {
-			System.out.println("");
-			System.out.println("This is not a valid menu option");
-			System.out.println("Please check the menu and try again. Thank you!");
-			System.out.println("");
-			runParkwideReservationPage(thisPark);
+		boolean inputchecker = false;
+		while (inputchecker == false) {
+			if(userInput.equals("1")) {
+				inputchecker = true;
+				runCampgroundsPage(thisPark);
+			}
+			else if(userInput.equals("2")) {
+				inputchecker = true;
+				runParkwideReservationPage(thisPark);
+			} else if (userInput.equals("3")) {
+				inputchecker = true;
+				run();
+			} else {
+				System.out.println("");
+				System.out.println("This is not a valid menu option");
+				System.out.println("Please check the menu and try again. Thank you!");
+				System.out.println("");
+				runParkwideReservationPage(thisPark);
+			}
 		}
 		
 	}
@@ -156,20 +161,24 @@ public class CampgroundCLI {
 		System.out.println("What would you like to do?");
 		System.out.println("1) Search for reservation date availability");
 		System.out.println("2) Return to " + thisPark.getParkName() + " National Park page"); //TODO test all these going back things
-		String userInput = getUserInput();
 		boolean inputchecker = false;
-		while (inputchecker = false) {
+		while (inputchecker == false) {
+			String userInput = getUserInput();
 			if(userInput.equals("1")) {
-				List<Site> searchResults = runSearchCampsitesFromCamp(campMap, thisPark);
-				if (searchResults.size() > 0) {
-					System.out.println("Results:");
-					System.out.println();
-					System.out.println("Site No., Max Occup., Acc?, Max RV Length, Utility, Cost"); //TODO clean up display
-					Map <String, Site> campSitesList = makeCampSitesList(searchResults);  
-					makeReservation(campSitesList);
-				} else {
-					System.out.println("There are no available campsites that match the dates and/or search parameters.");
-				}
+				inputchecker = true;
+				runSearchCampsitesFromCamp(campMap, thisPark);
+//				List<Site> searchResults = runSearchCampsitesFromCamp(campMap, thisPark);
+//				if (searchResults.size() > 0) {
+//					System.out.println("Results:");
+//					System.out.println();
+//					System.out.println("Site No., Max Occup., Acc?, Max RV Length, Utility, Cost"); //TODO clean up display
+//					Map <String, Site> campSitesList = makeCampSitesList(searchResults);  
+//					
+//					runSearchCampsitesFromCamp(campSitesList, thisPark);
+//				} else {
+//					System.out.println("There are no available campsites that match the dates and/or search parameters.");
+//				}
+				
 			}
 			else if(userInput.equals("2")) {
 				inputchecker = true;
@@ -182,7 +191,7 @@ public class CampgroundCLI {
 		
 	}
 	
-	public void runParkwideReservationPage(Park thisPark) {		//OPTIONAL << do last
+	public void runParkwideReservationPage(Park thisPark) {		
 		System.out.println(thisPark.getParkName() + " National Park");
 		System.out.println("Parkwide Searches");
 		System.out.println();
@@ -447,24 +456,6 @@ public class CampgroundCLI {
 		runParkwideReservationPage(thisPark);
 	}
 	
-	public boolean isDateValid(String inputDate) {
-		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM/dd/uuuu", Locale.US);
-		try {
-			LocalDate.parse(inputDate, dateFormatter);
-		} catch (DateTimeParseException e) {
-			return false;
-		}
-		if (LocalDate.parse(inputDate, DateTimeFormatter.ofPattern("MM/dd/uuuu")).isBefore(LocalDate.now())) {
-			return false;
-		} 
-		if (LocalDate.parse(inputDate, DateTimeFormatter.ofPattern("MM/dd/uuuu")).isAfter(LocalDate.now().plusYears(2))){
-			return false;
-		}
-		else {
-			return true;
-		}
-	}
-	
 	public List<Site> runSearchCampsitesFromCamp(Map<String, Campground> campMap, Park thisPark) {
 		List<Site> resultsList = new ArrayList<>();
 		System.out.println("Which campground? (Enter * to cancel search ___");
@@ -496,38 +487,82 @@ public class CampgroundCLI {
 			if (isDateValid(departureDateInput) == false) {
 			System.out.println("I'm sorry, but please check to ensure that your date is valid");
 			}
-//			else {
-//				toDate = LocalDate.parse(departureDateInput, DateTimeFormatter.ofPattern("MM/dd/uuuu"));
-//				if (toDate.isBefore(fromDate)) {
-//					System.out.println("");
-//					System.out.println("I'm sorry, but your departure date cannot precede your arrival date");
-//					System.out.println("");
-//				}
-//				else if (isDateValid(departureDateInput) == true && (!toDate.isBefore(fromDate))) {
-//					inputchecker = true;
-//				}
-//			}
-			else if (isDateValid(departureDateInput) == true) {
-				inputchecker = true;
+			else {
 				toDate = LocalDate.parse(departureDateInput, DateTimeFormatter.ofPattern("MM/dd/uuuu"));
+				if (toDate.isBefore(fromDate)) {
+					System.out.println("");
+					System.out.println("I'm sorry, but your departure date cannot precede your arrival date");
+					System.out.println("");
+				}
+				else if (isDateValid(departureDateInput) == true && (!toDate.isBefore(fromDate))) {
+					inputchecker = true;
+				}
 			}
 		}
-		
 		System.out.println("Would you like to enter additional search parameters? Y/N");
 		String runAdvSearchInput = getUserInput();
-		if (runAdvSearchInput.equalsIgnoreCase("N")) {
-			CampgroundSearch campgroundSearch = new CampgroundSearch(fromDate, toDate);
-			campgroundSearch.setCampgroundId(specificCampID);
-			
-			resultsList = campgroundDAO.returnTopAvailableSites(campgroundSearch);
-			
-		} else if (runAdvSearchInput.equalsIgnoreCase("Y")) {
-//			runAdvSearchFromCampground(fromDate, toDate, specificCampID);
-			resultsList = runAdvSearchFromCampground(fromDate, toDate, specificCampID, campMap, thisPark);
-		}	
-			
-//		}
+		inputchecker = false;
+		while (inputchecker == false) {
+			if (runAdvSearchInput.equalsIgnoreCase("N")) {
+				System.out.println("Running your search....");
+				runSearchFromCampground(fromDate, toDate, specificCampID, campMap, thisPark);
+			}
+			else if (runAdvSearchInput.toUpperCase().equals("Y")) {
+				inputchecker = true;
+				runAdvSearchFromCampground(fromDate, toDate, specificCampID, campMap, thisPark);
+			} else {
+				System.out.println("Please choose Y or N, thank you!");
+			}
+		}
 		return  resultsList;
+	}
+	
+	public void runSearchFromCampground(LocalDate fromDate, LocalDate toDate, int campgroundId, Map<String, Campground> campMap, Park thisPark) {
+		CampgroundSearch search = new CampgroundSearch(fromDate, toDate);
+		search.setCampgroundId(campgroundId);
+		List<Site> siteList = campgroundDAO.returnTopAvailableSites(search);
+		long resLength = ChronoUnit.DAYS.between(fromDate, toDate);
+		boolean inputchecker = false;
+		if (siteList.isEmpty()) {
+			System.out.println("");
+			System.out.println("No Results Match Your Search Criteria");
+			System.out.println("Please Try Another Search");
+			System.out.println("");
+			runSearchCampsitesFromCamp(campMap, thisPark);
+		}
+		while (inputchecker == false) {			
+			System.out.println("Results Matching Your Search Criteria");
+			int maxLength = returnMaxLengthSite(siteList);
+			System.out.println("Campground" + tabFormatterTitleParkwideSites(maxLength) + "Site ID\tSite No.\tMax Occup.\tAccessible\tRV Len\tUtility\tCost");
+			Map<String, Site> localMap = makeParkwideResList(siteList, maxLength, resLength);
+			System.out.println("Which site (Enter Site ID) should be reserved (enter 0 to cancel)?");
+			String input = getUserInput();
+			if (input.equals("0")) {
+				inputchecker = true;
+				runSearchCampsitesFromCamp(campMap, thisPark);
+			}
+			else {
+				if (localMap.containsKey(input)){
+					inputchecker = true;
+					System.out.println("What name should the reservation be made under? (80 characters max)");
+					String reservationName = getUserInput();
+					Reservation newReservation = new Reservation();
+					newReservation.setFromDate(fromDate);
+					newReservation.setToDate(toDate);
+					newReservation.setSiteId(localMap.get(input).getSiteId());
+					newReservation.setReservationName(reservationName);
+					newReservation.setCreateDate(LocalDate.now());
+					reservationDAO.addReservation(newReservation);				
+					inputchecker = true;
+					System.out.println("The reservation has been made and the confirmation id is " + newReservation.getReservationId());
+					runSearchCampsitesFromCamp(campMap, thisPark);
+				} else {
+					System.out.println("");
+					System.out.println("I'm sorry, you did not select an available site, please try again.");
+					System.out.println("");
+				}
+			}
+		}
 	}
 	
 	public List<Site> runAdvSearchFromCampground(LocalDate arrivalDate, LocalDate departureDate, int campID, Map<String, Campground> campMap, Park thisPark) {
@@ -683,6 +718,24 @@ public class CampgroundCLI {
 //	}
 	
 	//helper methods
+	public boolean isDateValid(String inputDate) {
+		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM/dd/uuuu", Locale.US);
+		try {
+			LocalDate.parse(inputDate, dateFormatter);
+		} catch (DateTimeParseException e) {
+			return false;
+		}
+		if (LocalDate.parse(inputDate, DateTimeFormatter.ofPattern("MM/dd/uuuu")).isBefore(LocalDate.now())) {
+			return false;
+		} 
+		if (LocalDate.parse(inputDate, DateTimeFormatter.ofPattern("MM/dd/uuuu")).isAfter(LocalDate.now().plusYears(2))){
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+	
 	public Map<String, Park> makeParkNamesOptionsList() {		//may need to add (List<Park> parkList)
 		List<Park> parkList = parkDAO.returnAllParks();
 		Map<String, Park> parkMap = new HashMap<>();
@@ -696,6 +749,19 @@ public class CampgroundCLI {
 		}
 		return parkMap;
 	}
+	
+//	public Map<String, Campground> makeCampgroundsUserList(int parkId, List<Campground> campList){
+//		Map<String, Campground> campMap = new HashMap<>();
+//		int counter = 0;
+//		String campName = "";
+//		for (Campground camp : campList) {
+//			campName = camp.getCampName();
+//			counter += 1;
+//			campMap.put(Integer.toString(counter), camp);
+//			System.out.println("(" + counter + ") " + campName + tabFormatter2(campName, maxLength) + mapMMToMonth(camp.getOpenFromMonth()) + tabFormatterMonth(monthTab) + mapMMToMonth(camp.getOpenToMonth()) + "\t$" + camp.getDailyFee() + ".00");
+//		}
+//		return campMap;
+//	}
 	
 	public Map<String, Campground> makeCampgroundsUserList(List<Campground> campList, int maxLength, int monthTab){
 		Map<String, Campground> campMap = new HashMap<>();
