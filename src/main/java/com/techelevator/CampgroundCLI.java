@@ -35,6 +35,8 @@ public class CampgroundCLI {
 	private ParkDAO parkDAO;
 	private CampgroundDAO campgroundDAO;
 	private ReservationDAO reservationDAO;
+	private Scanner scanner;
+//	private String input = new Scanner(System.in).nextLine();
 
 	
 
@@ -44,6 +46,7 @@ public class CampgroundCLI {
 		dataSource.setUsername("postgres");
 		dataSource.setPassword("postgres1");
 
+		
 		CampgroundCLI application = new CampgroundCLI(dataSource);
 		application.run();
 	}
@@ -55,7 +58,7 @@ public class CampgroundCLI {
 		campgroundDAO = new JDBCCampgroundDAO(datasource);
 		reservationDAO = new JDBCReservationDAO(datasource);
 		
-		
+		scanner = new Scanner(System.in);
 	}
 
 	public void run() {
@@ -84,7 +87,8 @@ public class CampgroundCLI {
 	//user input methods
 	public String getUserInput() {
 		System.out.print("Please choose an option >> ");
-		String input = new Scanner(System.in).nextLine();
+//		String input = new Scanner(System.in).nextLine();
+		String input = scanner.nextLine();
 		return input;
 	}
 	
