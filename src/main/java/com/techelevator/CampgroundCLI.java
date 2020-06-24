@@ -36,7 +36,7 @@ public class CampgroundCLI {
 	private CampgroundDAO campgroundDAO;
 	private ReservationDAO reservationDAO;
 	private Scanner scanner;
-//	private String input = new Scanner(System.in).nextLine();
+
 
 	
 
