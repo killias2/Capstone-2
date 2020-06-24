@@ -93,20 +93,6 @@ public class CampgroundCLI {
 	}
 	
 	
-	//subpage methods
-//	public void runAllParksPage() {
-//		System.out.println("Select a Park for details");
-//		System.out.println();
-//		Map<String, Park> parkmap = makeParkNamesOptionsList(); //helper method prints all other options
-//		System.out.println("Q) quit");
-//		System.out.println();
-//		String userInput = getUserInput();
-//		if (parkmap.containsKey(userInput) && userInputIsValid(userInput)) {
-//			Park specificPark = parkmap.get(userInput);
-//			runSpecificParkPage(specificPark);
-//		}
-//	}
-	
 	public void runSpecificParkPage(Park thisPark) {
 		boolean inputchecker = false;
 		while (inputchecker == false) {
@@ -152,14 +138,15 @@ public class CampgroundCLI {
 	public void runCampgroundsPage(Park thisPark) {
 		List<Campground> campList = parkDAO.returnAllCampgrounds(thisPark.getParkId());
 		int maxLength = returnMaxLength(campList);
-		int monthTab = returnMonthTab(campList);
+		int fromMonthTab = returnFromMonthTab(campList);
+		int toMonthTab = returnToMonthTab(campList);
 		int parkId = thisPark.getParkId();
 		boolean inputchecker = false;
 		while (inputchecker == false) {
 			System.out.println(thisPark.getParkName() + " National Park Campgrounds");
 			System.out.println();
-			System.out.println("Name" + tabFormatterTitle(maxLength) + "Opens" + tabFormatterMonth(monthTab) + "Closes\tDaily Fee"); //TODO make method to make this look nice
-			Map<String, Campground> campMap = makeCampgroundsUserList(campList, maxLength, monthTab); //prints list of campgrounds to user
+			System.out.println("Name" + tabFormatterTitle(maxLength) + "Opens" + tabFormatterMonth(fromMonthTab) + "Closes" + tabFormatterMonth(toMonthTab) + "Daily Fee"); //TODO make method to make this look nice
+			Map<String, Campground> campMap = makeCampgroundsUserList(campList, maxLength, fromMonthTab, toMonthTab); //prints list of campgrounds to user
 			System.out.println();
 			System.out.println("What would you like to do?");
 			System.out.println("1) Search for reservation date availability");
@@ -167,7 +154,7 @@ public class CampgroundCLI {
 			String userInput = getUserInput();
 			if(userInput.equals("1")) {
 				inputchecker = true;
-				runSearchCampsitesFromCamp(campMap, thisPark, maxLength, campList, monthTab);			
+				runSearchCampsitesFromCamp(campMap, thisPark, maxLength, campList, fromMonthTab, toMonthTab);			
 			}
 			else if(userInput.equals("2")) {
 				inputchecker = true;
@@ -446,8 +433,7 @@ public class CampgroundCLI {
 	}
 	
 	//v Layer E
-	public List<Site> runSearchCampsitesFromCamp(Map<String, Campground> campMap, Park thisPark, int maxLength, List<Campground> campList, int monthTab) {
-		List<Site> resultsList = new ArrayList<>();
+	public void runSearchCampsitesFromCamp(Map<String, Campground> campMap, Park thisPark, int maxLength, List<Campground> campList, int fromMonthTab, int toMonthTab) {
 		int specificCampID = 0;
 		Campground specificCamp = new Campground();
 		boolean inputchecker = false;
@@ -467,12 +453,11 @@ public class CampgroundCLI {
 				System.out.println("Please choose from the available campgrounds");
 				System.out.println(thisPark.getParkName() + " National Park Campgrounds");
 				System.out.println();
-				System.out.println("Name" + tabFormatterTitle(maxLength) + "Opens" + tabFormatterMonth(monthTab) + "Closes\tDaily Fee"); //TODO make method to make this look nice
-				campMap = makeCampgroundsUserList(campList, maxLength, monthTab); //prints list of campgrounds to user
+				System.out.println("Name" + tabFormatterTitle(maxLength) + "Opens" + tabFormatterMonth(fromMonthTab) + "Closes" + tabFormatterMonth(toMonthTab) + "Daily Fee"); //TODO make method to make this look nice
+				campMap = makeCampgroundsUserList(campList, maxLength, fromMonthTab, toMonthTab); //prints list of campgrounds to user
 				System.out.println();
 			}
 		}
-		
 		LocalDate fromDate = (LocalDate.now());
 		LocalDate toDate = (LocalDate.now());
 		inputchecker = false;
@@ -513,19 +498,18 @@ public class CampgroundCLI {
 			if (runAdvSearchInput.equalsIgnoreCase("N")) {
 				System.out.println("Running your search....");
 				inputchecker = true;
-				runSearchFromCampground(fromDate, toDate, specificCamp, campMap, thisPark, maxLength, campList, monthTab);
+				runSearchFromCampground(fromDate, toDate, specificCamp, campMap, thisPark, maxLength, campList, toMonthTab, fromMonthTab);
 			}
 			else if (runAdvSearchInput.toUpperCase().equals("Y")) {
 				inputchecker = true;
-				runAdvSearchFromCampground(fromDate, toDate, specificCamp, campMap, thisPark, maxLength, campList, monthTab);
+				runAdvSearchFromCampground(fromDate, toDate, specificCamp, campMap, thisPark, maxLength, campList, toMonthTab, fromMonthTab);
 			} else {
 				System.out.println("Please choose Y or N, thank you!");
 			}
 		}
-		return  resultsList;
 	}
 	
-	public void runSearchFromCampground(LocalDate fromDate, LocalDate toDate, Campground specificCamp, Map<String, Campground> campMap, Park thisPark, int maxLength, List<Campground> campList, int monthTab) {
+	public void runSearchFromCampground(LocalDate fromDate, LocalDate toDate, Campground specificCamp, Map<String, Campground> campMap, Park thisPark, int maxLength, List<Campground> campList, int toMonthTab, int fromMonthTab) {
 		CampgroundSearch search = new CampgroundSearch(fromDate, toDate);
 		search.setCampgroundId(specificCamp.getCampgroundId());
 		List<Site> siteList = campgroundDAO.returnTopAvailableSites(search);
@@ -536,13 +520,14 @@ public class CampgroundCLI {
 			System.out.println("No Results Match Your Search Criteria");
 			System.out.println("Please Try Another Search");
 			System.out.println("");
-			runSearchCampsitesFromCamp(campMap, thisPark, maxLength, campList, monthTab);
+			runSearchCampsitesFromCamp(campMap, thisPark, maxLength, campList, toMonthTab, fromMonthTab);
 		}
 		while (inputchecker == false) {			
 			System.out.println("Results Matching Your Search Criteria");
-			System.out.println("Campground" + tabFormatterTitleParkwideSites(maxLength) + "Site ID\tSite No.\tMax Occup.\tAccessible\tRV Len\tUtility\tCost");
-			Map<String, Site> localMap = makeCampSitesList(siteList);
-			System.out.println("Which site (Enter Site ID) should be reserved? (Enter 0 to cancel) __");
+			System.out.println("Campground: " + specificCamp.getCampName());
+			System.out.println("Site No.\tMax Occup.\tAccessible\tRV Len\tUtility\tCost");
+			Map<String, Site> localMap = makeCampSitesList(siteList, resLength);
+			System.out.println("Which site (Enter Site No.) should be reserved? (Enter 0 to cancel) __");
 			String input = getUserInput();
 			if (input.equals("0")) {
 				inputchecker = true;
@@ -572,7 +557,7 @@ public class CampgroundCLI {
 		}
 	}
 	
-	public List<Site> runAdvSearchFromCampground(LocalDate arrivalDate, LocalDate departureDate, Campground specificCamp, Map<String, Campground> campMap, Park thisPark, int maxLength, List<Campground> campList, int monthTab) {
+	public List<Site> runAdvSearchFromCampground(LocalDate arrivalDate, LocalDate departureDate, Campground specificCamp, Map<String, Campground> campMap, Park thisPark, int maxLength, List<Campground> campList, int toMonthTab, int fromMonthTab) {
 		List<Site> advResultsList = new ArrayList<>();
 		boolean inputchecker = false;
 		int searchMaxOccupancy = 0;
@@ -640,11 +625,8 @@ public class CampgroundCLI {
 			}
 		}
 		AdvancedSearch campAdvSearch = new AdvancedSearch(arrivalDate, departureDate, searchMaxOccupancy, isAccessible, searchMaxRVLength, isUtilities);
-//		search.setParkId(thisPark.getParkId());
-//		List<Site> siteList = parkDAO.returnAllAvailableSitesAdvanced(search);
 		campAdvSearch.setCampgroundId(specificCamp.getCampgroundId());
 		advResultsList = campgroundDAO.returnTopSitesRequirements(campAdvSearch);
-		
 		long resLength = ChronoUnit.DAYS.between(arrivalDate, departureDate);
 		inputchecker = false;
 		if (advResultsList.isEmpty()) {
@@ -652,17 +634,18 @@ public class CampgroundCLI {
 			System.out.println("No Results Match Your Search Criteria");
 			System.out.println("Please Try Another Search");
 			System.out.println("");
-			runSearchCampsitesFromCamp(campMap, thisPark, maxLength, campList, monthTab);
+			runSearchCampsitesFromCamp(campMap, thisPark, maxLength, campList, toMonthTab, fromMonthTab);
 		}
 		while (inputchecker == false) {			
 			System.out.println("Results Matching Your Search Criteria");
-			System.out.println("Campground" + tabFormatterTitleParkwideSites(maxLength) + "Site ID\tSite No.\tMax Occup.\tAccessible\tRV Len\tUtility\tCost");
-			Map<String, Site> localMap = makeCampSitesList(advResultsList);
-			System.out.println("Which site (Enter Site ID) should be reserved? (Enter 0 to cancel) __");
+			System.out.println("Campground: " + specificCamp.getCampName());
+			System.out.println("Site No.\tMax Occup.\tAccessible\tRV Len\tUtility\tCost");
+			Map<String, Site> localMap = makeCampSitesList(advResultsList, resLength);
+			System.out.println("Which site (Enter Site No.) should be reserved? (Enter 0 to cancel) __");
 			String input = getUserInput();
 			if (input.equals("0")) {
 				inputchecker = true;
-				runCampgroundsPage(thisPark);//TODO
+				runCampgroundsPage(thisPark);
 			}
 			else {
 				if (localMap.containsKey(input)){
@@ -692,36 +675,6 @@ public class CampgroundCLI {
 		return advResultsList;
 	}
 	
-//	public String makeReservation(Map<String, Site> searchResults) { //TODO: write method
-//		boolean isReserving = true;
-//		Reservation newReservation = new Reservation();
-//		while (isReserving) {
-//			System.out.println("Which site would you like to reserve? (Enter 0 to cancel)  __");
-//			String siteNumberInput = getUserInput();
-//			if(siteNumberInput.equals("0")) {
-////				isReserving = false;
-//				return "Reservation Canceled";
-//			} else if (searchResults.containsKey(siteNumberInput)) {  //might need to 
-//				
-//			} 
-//			System.out.println("Enter your name __");
-//			String nameInput = getUserInput();
-//			
-//			
-//		}
-//		
-//		return "";
-//	}
-	
-//	public List<Site> runParkwideSearchCampsiteAvailability(Park thisPark){
-//		
-//		
-//		return resultsList;
-//	}
-//	
-//	public List<Reservation> runListAllUpcomingReservations(){
-//		
-//	}
 	
 	//helper methods
 	public boolean isDateValid(String inputDate) {
@@ -756,20 +709,8 @@ public class CampgroundCLI {
 		return parkMap;
 	}
 	
-//	public Map<String, Campground> makeCampgroundsUserList(int parkId, List<Campground> campList){
-//		Map<String, Campground> campMap = new HashMap<>();
-//		int counter = 0;
-//		String campName = "";
-//		for (Campground camp : campList) {
-//			campName = camp.getCampName();
-//			counter += 1;
-//			campMap.put(Integer.toString(counter), camp);
-//			System.out.println("(" + counter + ") " + campName + tabFormatter2(campName, maxLength) + mapMMToMonth(camp.getOpenFromMonth()) + tabFormatterMonth(monthTab) + mapMMToMonth(camp.getOpenToMonth()) + "\t$" + camp.getDailyFee() + ".00");
-//		}
-//		return campMap;
-//	}
 	
-	public Map<String, Campground> makeCampgroundsUserList(List<Campground> campList, int maxLength, int monthTab){
+	public Map<String, Campground> makeCampgroundsUserList(List<Campground> campList, int maxLength, int fromMonthTab, int toMonthTab){
 		Map<String, Campground> campMap = new HashMap<>();
 		int counter = 0;
 		String campName = "";
@@ -777,7 +718,8 @@ public class CampgroundCLI {
 			campName = camp.getCampName();
 			counter += 1;
 			campMap.put(Integer.toString(counter), camp);
-			System.out.println("(" + counter + ") " + campName + tabFormatter2(campName, maxLength) + mapMMToMonth(camp.getOpenFromMonth()) + tabFormatterMonth(monthTab) + mapMMToMonth(camp.getOpenToMonth()) + "\t$" + camp.getDailyFee() + ".00");
+			System.out.println("(" + counter + ") " + campName + tabFormatter2(campName, maxLength) + mapMMToMonth(camp.getOpenFromMonth()) + tabFormatterMonth(fromMonthTab)
+				+ mapMMToMonth(camp.getOpenToMonth()) + tabFormatterMonthCamp(toMonthTab, camp.getOpenToMonth()) +"$" + camp.getDailyFee() + ".00");
 		}
 		return campMap;
 	}
@@ -794,14 +736,12 @@ public class CampgroundCLI {
 		return siteMap;
 	}
 	
-	public Map<String, Site> makeCampSitesList(List<Site> results) {
+	public Map<String, Site> makeCampSitesList(List<Site> results, long resLength) {
 		Map<String, Site> siteMap = new HashMap<>();
-		//String siteName = "";
-		int siteNumber = 0;
-		for (Site result : results) { //TODO write method
-			siteNumber = result.getSiteNumber();
+		for (Site result : results) {
+			int siteNumber = result.getSiteNumber();
 			siteMap.put(Integer.toString(siteNumber), result);
-			System.out.println(siteNumber + "," + result.getMaxOccupancy() + ", " + result.isAccessible() + ", " + result.getMaxRVlength() + ", " + result.isUtilities() + ", " + result.getDailyFee());  //TODO calc total cost and replace daily fee w/ it
+			System.out.println(siteNumber + "\t\t" + result.getMaxOccupancy() + "\t\t" + result.isAccessible() + "\t\t" + result.getMaxRVlength() + "\t" + result.isUtilities() + "\t$" + (result.getDailyFee() * (resLength + 1)) + ".00");
 		}
 		return siteMap;
 	}
@@ -837,15 +777,44 @@ public class CampgroundCLI {
 	}
 	
 	
-	private int returnMonthTab(List<Campground> campList) {
+	private int returnFromMonthTab(List<Campground> campList) {
 		int tabCount = 1;
 		for (int i = 0; i < campList.size(); i++) {
-			if (campList.get(i).getOpenFromMonth().equals("09")){
+			if (campList.get(i).getOpenFromMonth().equals("02")){
+				tabCount = 2;
+			}
+			else if (campList.get(i).getOpenFromMonth().equals("09")){
+				tabCount = 2;
+			}
+			else if (campList.get(i).getOpenFromMonth().equals("11")){
+				tabCount = 2;
+			}
+			else if (campList.get(i).getOpenFromMonth().equals("12")){
 				tabCount = 2;
 			}
 		}
 		return tabCount;
 	}
+	
+	private int returnToMonthTab(List<Campground> campList) {
+		int tabCount = 1;
+		for (int i = 0; i < campList.size(); i++) {
+			if (campList.get(i).getOpenToMonth().equals("02")){
+				tabCount = 2;
+			}
+			else if (campList.get(i).getOpenToMonth().equals("09")){
+				tabCount = 2;
+			}
+			else if (campList.get(i).getOpenToMonth().equals("11")){
+				tabCount = 2;
+			}
+			else if (campList.get(i).getOpenToMonth().equals("12")){
+				tabCount = 2;
+			}
+		}
+		return tabCount;
+	}
+
 	
 	private String tabFormatterTitle(int maxLength) {
 		
@@ -890,6 +859,31 @@ public class CampgroundCLI {
 		while (monthTab > 0) {
 			tabs = tabs + "\t";
 			monthTab --;
+		}
+		return tabs;
+	}
+	
+	private String tabFormatterMonthCamp(int monthTab, String monthNum) {
+		String tabs = "";
+		if (monthTab == 1) {
+			tabs = tabs + "\t";
+		}
+		else if (monthTab == 2) {
+			if (monthNum.equals("02")) {
+				tabs = tabs + "\t";
+			}
+			else if (monthNum.equals("09")) {
+				tabs = tabs + "\t";
+			}
+			else if (monthNum.equals("11")) {
+				tabs = tabs + "\t";
+			}
+			else if (monthNum.equals("12")) {
+				tabs = tabs + "\t";
+			}
+			else {
+				tabs = tabs + "\t\t";
+			}
 		}
 		return tabs;
 	}

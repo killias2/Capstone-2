@@ -19,7 +19,7 @@ public class JDBCCampgroundDAO implements CampgroundDAO {
 	@Override //TODO finish this method
 	public List<Site> returnTopAvailableSites(CampgroundSearch search) {
 		List<Site> topAvailableSites = new ArrayList<>();
-		String sqlReturnTopAvailableSites = "SELECT campground.campground_id, site.site_id, site_number, max_occupancy, accessible, max_rv_length, utilities, count(r.reservation_id) pop "
+		String sqlReturnTopAvailableSites = "SELECT campground.campground_id, site.site_id, site_number, max_occupancy, accessible, max_rv_length, utilities, campground.daily_fee, count(r.reservation_id) pop "
 					+ "FROM site "
 					+ "LEFT JOIN reservation r ON site.site_id = r.site_id "
 					+ "LEFT JOIN campground ON site.campground_id = campground.campground_id "
@@ -57,10 +57,10 @@ public class JDBCCampgroundDAO implements CampgroundDAO {
 		return topAvailableSites;
 	}
 
-	@Override //TODO finish this method
+	@Override
 	public List<Site> returnTopSitesRequirements(AdvancedSearch search) {
 		List<Site> topSitesRequirements = new ArrayList<>();
-		String sqlReturnTopSitesRequirements = "SELECT campground.campground_id, site.site_id, site_number, max_occupancy, accessible, max_rv_length, utilities, count(r.reservation_id) pop "
+		String sqlReturnTopSitesRequirements = "SELECT campground.campground_id, site.site_id, site_number, max_occupancy, accessible, max_rv_length, utilities, campground.daily_fee, count(r.reservation_id) pop "
 				+ "FROM site "
 				+ "LEFT JOIN reservation r ON site.site_id = r.site_id "
 				+ "LEFT JOIN campground ON site.campground_id = campground.campground_id "
@@ -137,6 +137,7 @@ public class JDBCCampgroundDAO implements CampgroundDAO {
 		thisSite.setAccessible(results.getBoolean("accessible"));
 		thisSite.setMaxRVlength(results.getInt("max_rv_length"));
 		thisSite.setUtilities(results.getBoolean("utilities"));
+		thisSite.setDailyFee((int)results.getDouble(("daily_fee")));
 		return thisSite;
 	}
 }
