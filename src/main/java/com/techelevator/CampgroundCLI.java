@@ -683,6 +683,8 @@ public class CampgroundCLI {
 			LocalDate.parse(inputDate, dateFormatter);
 		} catch (DateTimeParseException e) {
 			return false;
+		} catch (NullPointerException f) {
+			return false;
 		}
 		if (LocalDate.parse(inputDate, DateTimeFormatter.ofPattern("MM/dd/uuuu")).isBefore(LocalDate.now())) {
 			return false;
